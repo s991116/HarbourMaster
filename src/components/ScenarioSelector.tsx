@@ -1,10 +1,12 @@
 import { SCENARIOS, useSimulatorStore } from '../store/simulatorStore'
 import type { ScenarioId } from '../simulator/scenarios'
+import { SettingsPanel } from './SettingsPanel'
 
 export function ScenarioSelector() {
   const scenarioId = useSimulatorStore((s) => s.scenarioId)
   const setScenario = useSimulatorStore((s) => s.setScenario)
   const resetScenario = useSimulatorStore((s) => s.resetScenario)
+  const activeScenario = SCENARIOS.find((s) => s.id === scenarioId)
 
   return (
     <div className="absolute left-4 top-4 w-80 rounded-xl border border-sky-400/30 bg-slate-950/80 p-4 backdrop-blur">
@@ -26,26 +28,30 @@ export function ScenarioSelector() {
         </button>
       </div>
 
-      <div className="mt-4 space-y-2">
-        {SCENARIOS.map((scenario) => {
-          const active = scenario.id === scenarioId
-          return (
-            <button
-              key={scenario.id}
-              type="button"
-              onClick={() => setScenario(scenario.id as ScenarioId)}
-              className={`w-full rounded-lg border px-3 py-2 text-left transition ${
-                active
-                  ? 'border-sky-400 bg-sky-900/40'
-                  : 'border-slate-700 bg-slate-900/40 hover:border-sky-500/50'
-              }`}
-            >
-              <div className="text-sm font-medium text-white">{scenario.name}</div>
-              <div className="mt-1 text-xs text-slate-300">{scenario.objective}</div>
-            </button>
-          )
-        })}
-      </div>
+      <label className="mt-4 block">
+        <span className="text-xs uppercase tracking-[0.15em] text-sky-300/80">
+          Scenario
+        </span>
+        <select
+          value={scenarioId}
+          onChange={(e) => setScenario(e.target.value as ScenarioId)}
+          className="mt-1 w-full rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm text-white"
+        >
+          {SCENARIOS.map((scenario) => (
+            <option key={scenario.id} value={scenario.id}>
+              {scenario.name}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {activeScenario && (
+        <p className="mt-2 text-xs leading-relaxed text-slate-400">
+          {activeScenario.objective}
+        </p>
+      )}
+
+      <SettingsPanel />
     </div>
   )
 }

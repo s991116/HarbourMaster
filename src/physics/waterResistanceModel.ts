@@ -36,12 +36,27 @@ export function computeWaterDrag(
   }
 }
 
+/**
+ * Yaw resistance in water: opposes angular velocity so the boat stops turning
+ * when rudder/prop torque is removed. Includes hull coupling from lateral drag.
+ */
 export function computeAngularDamping(
   config: BoatConfig,
-  angularVelocity: number,
+  state: BoatState,
 ): number {
-  const damping = config.keelType === 'long-keel' ? 4200 : 2600
-  const quadratic = -angularVelocity * Math.abs(angularVelocity) * damping * 0.001
-  const linear = -angularVelocity * damping * 0.00008
-  return quadratic + linear
+  const { angularVelocity } = state
+
+  const hullCoupling =
+    config.dragSideways * config.length * config.beam * 0.000008
+
+  const linear =
+    -angularVelocity *
+    (config.angularDragLinear + hullCoupling)
+
+  const quadratic =
+    -angularVelocity *
+    Math.abs(angularVelocity) *
+    (config.angularDragQuadratic + hullCoupling * 0.5)
+
+  return linear + quadratic
 }

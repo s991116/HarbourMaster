@@ -1,5 +1,5 @@
 import { PhysicsEngine } from '../physics/physicsEngine'
-import type { PhysicsInput, PhysicsSnapshot } from '../physics/types'
+import type { BoatConfig, PhysicsInput, PhysicsSnapshot, Wind } from '../physics/types'
 import { getScenario, type ScenarioId } from './scenarios'
 
 export class SimulatorController {
@@ -63,5 +63,13 @@ export class SimulatorController {
 
   getSnapshot(): PhysicsSnapshot {
     return this.engine.getSnapshot()
+  }
+
+  setBoatConfig(config: BoatConfig): void {
+    this.engine.setConfig(config)
+  }
+
+  setWind(wind: Wind): void {
+    this.engine.setWind(wind)
   }
 }

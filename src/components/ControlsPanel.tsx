@@ -1,9 +1,16 @@
+import {
+  formatRudderStep,
+  formatThrottleStep,
+  MAX_RUDDER_STEP,
+  MAX_THROTTLE_STEP,
+} from '../controls/controlSteps'
 import { useSimulatorStore } from '../store/simulatorStore'
 
 export function ControlsPanel() {
-  const input = useSimulatorStore((s) => s.input)
-  const setThrottle = useSimulatorStore((s) => s.setThrottle)
-  const setRudder = useSimulatorStore((s) => s.setRudder)
+  const throttleStep = useSimulatorStore((s) => s.throttleStep)
+  const rudderStep = useSimulatorStore((s) => s.rudderStep)
+  const setThrottleStep = useSimulatorStore((s) => s.setThrottleStep)
+  const setRudderStep = useSimulatorStore((s) => s.setRudderStep)
   const neutralControls = useSimulatorStore((s) => s.neutralControls)
 
   return (
@@ -16,31 +23,43 @@ export function ControlsPanel() {
         <label className="block">
           <div className="mb-1 flex justify-between text-xs text-slate-300">
             <span>Engine</span>
-            <span>{Math.round(input.throttle * 100)}%</span>
+            <span>{formatThrottleStep(throttleStep)}</span>
           </div>
           <input
             type="range"
-            min={-100}
-            max={100}
-            value={Math.round(input.throttle * 100)}
-            onChange={(e) => setThrottle(Number(e.target.value) / 100)}
+            min={-MAX_THROTTLE_STEP}
+            max={MAX_THROTTLE_STEP}
+            step={1}
+            value={throttleStep}
+            onChange={(e) => setThrottleStep(Number(e.target.value))}
             className="w-full accent-sky-400"
           />
+          <div className="mt-1 flex justify-between text-[10px] text-slate-500">
+            <span>Astern</span>
+            <span>Neutral</span>
+            <span>Forward</span>
+          </div>
         </label>
 
         <label className="block">
           <div className="mb-1 flex justify-between text-xs text-slate-300">
             <span>Rudder</span>
-            <span>{Math.round((input.rudderAngle * 180) / Math.PI)}°</span>
+            <span>{formatRudderStep(rudderStep)}</span>
           </div>
           <input
             type="range"
-            min={-30}
-            max={30}
-            value={Math.round((input.rudderAngle * 180) / Math.PI)}
-            onChange={(e) => setRudder((Number(e.target.value) * Math.PI) / 180)}
+            min={-MAX_RUDDER_STEP}
+            max={MAX_RUDDER_STEP}
+            step={1}
+            value={rudderStep}
+            onChange={(e) => setRudderStep(Number(e.target.value))}
             className="w-full accent-sky-400"
           />
+          <div className="mt-1 flex justify-between text-[10px] text-slate-500">
+            <span>Port</span>
+            <span>Amidships</span>
+            <span>Stbd</span>
+          </div>
         </label>
 
         <button
@@ -53,8 +72,8 @@ export function ControlsPanel() {
       </div>
 
       <div className="mt-4 rounded-lg bg-slate-900/60 px-3 py-2 text-xs leading-relaxed text-slate-300">
-        <div>↑ / ↓ — throttle ahead / astern</div>
-        <div>← / → — rudder port / starboard</div>
+        <div>↑ / ↓ — engine step ahead / astern</div>
+        <div>← / → — rudder step port / starboard</div>
         <div>Space — neutral</div>
         <div>R — reset scenario</div>
       </div>

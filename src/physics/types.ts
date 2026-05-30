@@ -11,7 +11,14 @@ export type BoatConfig = {
   rudderArea: number
   enginePower: number
   propellerRotation: PropellerRotation
+  /** Base projected windage area (m²) */
   windageArea: number
+  /** Wind effect multiplier from ahead (headwind) — lowest */
+  windageHead: number
+  /** Wind effect multiplier from the beam — highest */
+  windageBeam: number
+  /** Wind effect multiplier from astern (tailwind) — medium */
+  windageAstern: number
   turningInertia: number
   /** Quadratic + linear water resistance when moving ahead through water */
   dragAhead: number
@@ -19,6 +26,10 @@ export type BoatConfig = {
   dragAstern: number
   /** Quadratic + linear water resistance when moving sideways (port/starboard equal) */
   dragSideways: number
+  /** Linear yaw damping in water — opposes angular velocity (brings rotation to rest) */
+  angularDragLinear: number
+  /** Quadratic yaw damping in water — stronger at higher turn rates */
+  angularDragQuadratic: number
 }
 
 export type BoatState = {

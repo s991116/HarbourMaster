@@ -116,7 +116,7 @@ export class PhysicsEngine {
       prop.torque +
       rudder.torque +
       wind.torque +
-      computeAngularDamping(this.config, this.state.angularVelocity)
+      computeAngularDamping(this.config, this.state)
 
     const mass = this.config.displacement
     const acceleration = scale(totalForce, 1 / mass)
@@ -124,6 +124,14 @@ export class PhysicsEngine {
 
     const angularAcceleration = totalTorque / this.config.turningInertia
     this.state.angularVelocity += angularAcceleration * dt
+
+    const controlsNeutral =
+      Math.abs(this.state.throttle) < 0.02 &&
+      Math.abs(this.state.rudderAngle) < 0.02
+
+    if (controlsNeutral && Math.abs(this.state.angularVelocity) < 0.002) {
+      this.state.angularVelocity = 0
+    }
 
     this.state.position = add(
       this.state.position,
