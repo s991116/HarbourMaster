@@ -13,7 +13,7 @@ export function WindIndicator() {
   return (
     <div className="pointer-events-none absolute right-4 top-4 rounded-xl border border-sky-400/30 bg-slate-950/70 px-4 py-3 backdrop-blur">
       <div className="text-xs uppercase tracking-[0.2em] text-sky-300/80">
-        Vind
+        Wind
       </div>
       <div className="mt-2 flex items-center gap-3">
         <div
@@ -26,7 +26,7 @@ export function WindIndicator() {
           <div className="text-lg font-semibold text-white">
             {speedKnots.toFixed(1)} kt
           </div>
-          <div className="text-xs text-slate-300">Retning mod båden</div>
+          <div className="text-xs text-slate-300">Direction toward boat</div>
         </div>
       </div>
     </div>

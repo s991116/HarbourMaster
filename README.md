@@ -1,8 +1,8 @@
 # HarbourMaster
 
-Browserbaseret **Harbour Manoeuvre Trainer** til træning af havnemanøvrer for motorbåde.
+Browser-based **Harbour Manoeuvre Trainer** for practising harbour manoeuvres with motorboats.
 
-Simulatoren er 2D top-down og modellerer realistisk bådadfærd via en egenudviklet fysikmotor i TypeScript — uden generelle game physics engines.
+The simulator is 2D top-down and models realistic boat behaviour via a custom physics engine in TypeScript — no general-purpose game physics engines.
 
 ## Tech stack
 
@@ -11,36 +11,36 @@ Simulatoren er 2D top-down og modellerer realistisk bådadfærd via en egenudvik
 - Zustand (state)
 - Tailwind CSS (UI)
 
-## Kom i gang
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Åbn [http://localhost:5173](http://localhost:5173).
+Open [http://localhost:5173](http://localhost:5173).
 
-## Kontroller
+## Controls
 
-| Tast | Handling |
-|------|----------|
-| ↑ | Gas frem |
-| ↓ | Gas bak |
-| ← | Ror bagbord |
-| → | Ror styrbord |
-| Mellemrum | Neutral |
-| R | Nulstil scenarie |
+| Key | Action |
+|-----|--------|
+| ↑ | Throttle ahead |
+| ↓ | Throttle astern |
+| ← | Rudder port |
+| → | Rudder starboard |
+| Space | Neutral |
+| R | Reset scenario |
 
-Der findes også virtuelle skyderkontroller i UI'et.
+Virtual slider controls are also available in the UI.
 
-## Scenarier (MVP)
+## Scenarios (MVP)
 
-1. **Tomt bassin** — lær fart og inerti
-2. **Tillægning langs kaj** — blød tillægning
-3. **Fralægning i sidevind** — vind og prop walk
-4. **Smal havneplads** — manøvrering mellem både
+1. **Empty basin** — learn speed and inertia
+2. **Berthing alongside** — smooth alongside landing
+3. **Departure in crosswind** — wind and prop walk
+4. **Narrow berth** — manoeuvring between boats
 
-## Arkitektur
+## Architecture
 
 ```text
 React UI
@@ -61,28 +61,28 @@ Physics Engine
 Three.js Renderer
 ```
 
-## Fysik (kort)
+## Physics (summary)
 
-Ved hver frame beregnes:
+Each frame computes:
 
 ```text
 F_total = F_propeller + F_rudder + F_wind + F_water_drag
 T_total = T_rudder + T_prop_walk + T_wind + angular_damping
 ```
 
-Modstand er retningsafhængig (lav fremad, høj sideværts). Bakgear har særskilt ror- og prop walk-model. Vind skalerer med vindstyrke².
+Drag is direction-dependent (low ahead, high sideways). Astern gear uses a separate rudder and prop walk model. Wind scales with wind speed².
 
 ## Scripts
 
 ```bash
-npm run dev      # udvikling
-npm run build    # produktionsbuild
-npm run preview  # forhåndsvis build
+npm run dev      # development
+npm run build    # production build
+npm run preview  # preview build
 ```
 
 ## GitHub
 
-Opret et nyt repo med navnet `HarbourMaster` og push:
+Create a new repo named `HarbourMaster` and push:
 
 ```bash
 git init
@@ -91,4 +91,4 @@ git commit -m "Initial Harbour Manoeuvre Trainer MVP"
 gh repo create HarbourMaster --public --source=. --remote=origin --push
 ```
 
-(Erstat med `--private` hvis du foretrækker et privat repo.)
+(Use `--private` if you prefer a private repo.)

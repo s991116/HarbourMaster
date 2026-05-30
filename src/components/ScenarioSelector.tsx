@@ -14,7 +14,7 @@ export function ScenarioSelector() {
             Harbour Manoeuvre Trainer
           </h1>
           <p className="mt-1 text-xs text-slate-300">
-            Realistisk 2D havnesimulator til motorbådmanøvrer
+            Realistic 2D harbour simulator for motorboat manoeuvres
           </p>
         </div>
         <button

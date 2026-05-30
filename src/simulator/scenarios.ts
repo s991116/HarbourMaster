@@ -86,9 +86,9 @@ function parkedBoat(
 export const SCENARIOS: Scenario[] = [
   {
     id: 'empty-basin',
-    name: 'Tomt bassin',
-    description: 'Åbent bassin uden forhindringer.',
-    objective: 'Lær fart, inerti og prop walk i bakgear.',
+    name: 'Empty basin',
+    description: 'Open basin with no obstacles.',
+    objective: 'Learn speed, inertia, and prop walk in astern gear.',
     boatConfig: FIN_KEEL_BOAT,
     initialState: {
       position: vec2(0, -30),
@@ -104,9 +104,9 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'berthing',
-    name: 'Tillægning langs kaj',
-    description: 'Tillæg langs styrbords kaj med let medvind.',
-    objective: 'Brug fart og ror til blød tillægning uden bump.',
+    name: 'Berthing alongside',
+    description: 'Come alongside the starboard quay with a light following wind.',
+    objective: 'Use speed and rudder for a smooth alongside landing without bumps.',
     boatConfig: LONG_KEEL_BOAT,
     initialState: {
       position: vec2(-8, -35),
@@ -128,9 +128,9 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'departure-crosswind',
-    name: 'Fralægning i sidevind',
-    description: 'Fralæg fra kaj med kraftig sidevind.',
-    objective: 'Kompensér for vind og prop walk ved fralægning.',
+    name: 'Departure in crosswind',
+    description: 'Cast off from the quay in strong crosswind.',
+    objective: 'Compensate for wind and prop walk when leaving the berth.',
     boatConfig: FIN_KEEL_BOAT,
     initialState: {
       position: vec2(22, 5),
@@ -154,9 +154,9 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'narrow-berth',
-    name: 'Smal havneplads',
-    description: 'Manøvrering mellem to både i sidevind.',
-    objective: 'Hold kontrol i snæver plads uden kollision.',
+    name: 'Narrow berth',
+    description: 'Manoeuvring between two boats in crosswind.',
+    objective: 'Maintain control in a tight space without collision.',
     boatConfig: LONG_KEEL_BOAT,
     initialState: {
       position: vec2(0, -28),
