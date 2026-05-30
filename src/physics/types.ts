@@ -13,7 +13,11 @@ export type BoatConfig = {
   propellerRotation: PropellerRotation
   windageArea: number
   turningInertia: number
-  dragForward: number
+  /** Quadratic + linear water resistance when moving ahead through water */
+  dragAhead: number
+  /** Quadratic + linear water resistance when moving astern through water */
+  dragAstern: number
+  /** Quadratic + linear water resistance when moving sideways (port/starboard equal) */
   dragSideways: number
 }
 

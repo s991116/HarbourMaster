@@ -10,7 +10,8 @@ export const LONG_KEEL_BOAT: BoatConfig = {
   propellerRotation: 'clockwise',
   windageArea: 18,
   turningInertia: 28000,
-  dragForward: 180,
+  dragAhead: 220,
+  dragAstern: 190,
   dragSideways: 4200,
 }
 
@@ -24,6 +25,7 @@ export const FIN_KEEL_BOAT: BoatConfig = {
   propellerRotation: 'clockwise',
   windageArea: 16,
   turningInertia: 14000,
-  dragForward: 150,
-  dragSideways: 2400,
+  dragAhead: 10,
+  dragAstern: 15,
+  dragSideways: 240,
 }

@@ -70,7 +70,7 @@ F_total = F_propeller + F_rudder + F_wind + F_water_drag
 T_total = T_rudder + T_prop_walk + T_wind + angular_damping
 ```
 
-Drag is direction-dependent (low ahead, high sideways). Astern gear uses a separate rudder and prop walk model. Wind scales with wind speed².
+Drag is direction-dependent with separate coefficients for ahead, astern, and sideways motion (port/starboard equal). Each axis uses quadratic hydrodynamic drag plus a linear viscous term so the boat comes to rest naturally.
 
 ## Scripts
 

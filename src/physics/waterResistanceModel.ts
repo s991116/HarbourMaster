@@ -1,6 +1,18 @@
 import type { BoatConfig, BoatState } from './types'
 import { dot, fromAngle, scale } from './vector2'
 
+/** Linear viscous fraction of each directional drag coefficient (brings boat to rest) */
+const LINEAR_DRAG_FRACTION = 0.4
+
+/**
+ * Directional water resistance in the boat body frame.
+ * Ahead, astern, and sideways each use their own coefficient.
+ * Quadratic term models hydrodynamic drag; linear term ensures the boat settles to rest.
+ */
+function axisDrag(speed: number, coefficient: number): number {
+  return -(speed * Math.abs(speed) * coefficient + speed * coefficient * LINEAR_DRAG_FRACTION)
+}
+
 export function computeWaterDrag(
   config: BoatConfig,
   state: BoatState,
@@ -11,15 +23,16 @@ export function computeWaterDrag(
   const surge = dot(state.velocity, forward)
   const sway = dot(state.velocity, sideways)
 
-  const surgeDrag = -surge * Math.abs(surge) * config.dragForward
-  const swayDrag = -sway * Math.abs(sway) * config.dragSideways
+  const surgeCoeff = surge >= 0 ? config.dragAhead : config.dragAstern
+  const surgeDrag = axisDrag(surge, surgeCoeff)
+  const swayDrag = axisDrag(sway, config.dragSideways)
 
-  const dragForward = scale(forward, surgeDrag)
-  const dragSideways = scale(sideways, swayDrag)
+  const dragAlongSurge = scale(forward, surgeDrag)
+  const dragAlongSway = scale(sideways, swayDrag)
 
   return {
-    x: dragForward.x + dragSideways.x,
-    y: dragForward.y + dragSideways.y,
+    x: dragAlongSurge.x + dragAlongSway.x,
+    y: dragAlongSurge.y + dragAlongSway.y,
   }
 }
 
@@ -28,5 +41,7 @@ export function computeAngularDamping(
   angularVelocity: number,
 ): number {
   const damping = config.keelType === 'long-keel' ? 4200 : 2600
-  return -angularVelocity * Math.abs(angularVelocity) * damping * 0.001
+  const quadratic = -angularVelocity * Math.abs(angularVelocity) * damping * 0.001
+  const linear = -angularVelocity * damping * 0.00008
+  return quadratic + linear
 }
