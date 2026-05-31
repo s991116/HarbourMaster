@@ -1,15 +1,19 @@
 import { useMemo } from 'react'
+import {
+  MAX_WIND_SPEED_KNOTS,
+  windDirectionRadiansToDegrees,
+  windSpeedMsToKnots,
+  WIND_DIRECTION_STEP,
+} from '../controls/controlSteps'
 import { useSimulatorStore } from '../store/simulatorStore'
-
-const KNOTS_TO_MS = 1.94384
 
 export function WindIndicator() {
   const wind = useSimulatorStore((s) => s.snapshot.wind)
   const setWindSpeedKnots = useSimulatorStore((s) => s.setWindSpeedKnots)
   const setWindDirectionDegrees = useSimulatorStore((s) => s.setWindDirectionDegrees)
 
-  const speedKnots = wind.speed * KNOTS_TO_MS
-  const directionDegrees = Math.round(((wind.direction * 180) / Math.PI + 360) % 360)
+  const speedKnots = windSpeedMsToKnots(wind.speed)
+  const directionDegrees = windDirectionRadiansToDegrees(wind.direction)
 
   const arrowStyle = useMemo(() => {
     return { transform: `rotate(${directionDegrees}deg)` }
@@ -30,7 +34,7 @@ export function WindIndicator() {
         </div>
         <div className="min-w-0 flex-1">
           <div className="text-lg font-semibold text-white">
-            {speedKnots.toFixed(1)} kt
+            {speedKnots} kt
           </div>
           <div className="text-xs text-slate-300">{directionDegrees}°</div>
         </div>
@@ -39,13 +43,13 @@ export function WindIndicator() {
       <label className="mt-3 block">
         <div className="mb-1 flex justify-between text-xs text-slate-300">
           <span>Speed</span>
-          <span>{speedKnots.toFixed(1)} kt</span>
+          <span>{speedKnots} kt</span>
         </div>
         <input
           type="range"
           min={0}
-          max={30}
-          step={0.5}
+          max={MAX_WIND_SPEED_KNOTS}
+          step={1}
           value={speedKnots}
           onChange={(e) => setWindSpeedKnots(Number(e.target.value))}
           className="w-full accent-sky-400"
@@ -60,8 +64,8 @@ export function WindIndicator() {
         <input
           type="range"
           min={0}
-          max={359}
-          step={1}
+          max={350}
+          step={WIND_DIRECTION_STEP}
           value={directionDegrees}
           onChange={(e) => setWindDirectionDegrees(Number(e.target.value))}
           className="w-full accent-sky-400"

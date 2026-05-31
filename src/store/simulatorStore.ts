@@ -5,6 +5,8 @@ import {
   MAX_THROTTLE_STEP,
   rudderStepToAngle,
   throttleStepToValue,
+  windDirectionDegreesToRadians,
+  windSpeedKnotsToMs,
 } from '../controls/controlSteps'
 import { SimulatorController } from '../simulator/controller'
 import { getScenario, SCENARIOS, type ScenarioId } from '../simulator/scenarios'
@@ -44,6 +46,7 @@ function stepsToInput(throttleStep: number, rudderStep: number): PhysicsInput {
 
 const initialScenario = getScenario('empty-basin')
 const controller = new SimulatorController(initialScenario.id)
+controller.start()
 
 export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   scenarioId: 'empty-basin',
@@ -127,13 +130,13 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   },
 
   setWindSpeedKnots: (knots) => {
-    const speed = Math.max(0, knots) / 1.94384
+    const speed = windSpeedKnotsToMs(knots)
     const { snapshot } = get()
     get().setWind({ ...snapshot.wind, speed })
   },
 
   setWindDirectionDegrees: (degrees) => {
-    const direction = (degrees * Math.PI) / 180
+    const direction = windDirectionDegreesToRadians(degrees)
     const { snapshot } = get()
     get().setWind({ ...snapshot.wind, direction })
   },
@@ -143,6 +146,7 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
     const scenario = getScenario(scenarioId)
     controller.resetScenario(scenarioId)
     controller.setBoatConfig(scenario.boatConfig)
+    controller.start()
     set({
       throttleStep: 0,
       rudderStep: 0,
