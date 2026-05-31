@@ -133,8 +133,9 @@ export const SCENARIOS: Scenario[] = [
     objective: 'Compensate for wind and prop walk when leaving the berth.',
     boatConfig: FIN_KEEL_BOAT,
     initialState: {
-      position: vec2(22, 5),
-      heading: Math.PI,
+      // Alongside berth quay (runs E–W at y≈8): length parallel to quay, port side to wall
+      position: vec2(18, 4.9),
+      heading: Math.PI / 2,
       velocity: vec2(),
       angularVelocity: 0,
       throttle: 0,

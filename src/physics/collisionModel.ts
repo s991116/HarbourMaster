@@ -1,4 +1,8 @@
 import type { BoatConfig, BoatState, HarbourBounds, StaticObstacle } from './types'
+import {
+  getBoatHullWorldVertices,
+  getObstacleLocalCorners,
+} from './boatHullProfile'
 import { clamp, dot, fromAngle, length, rotate, sub } from './vector2'
 
 export type CollisionResult = {
@@ -8,126 +12,191 @@ export type CollisionResult = {
   collided: boolean
 }
 
-function getBoatCorners(
-  state: BoatState,
-  config: BoatConfig,
-): Array<{ x: number; y: number }> {
-  const halfLength = config.length * 0.5
-  const halfBeam = config.beam * 0.5
-  const localCorners = [
-    { x: -halfBeam, y: halfLength },
-    { x: halfBeam, y: halfLength },
-    { x: halfBeam, y: -halfLength },
-    { x: -halfBeam, y: -halfLength },
-  ]
+const HULL_SKIN = 0.08
+const MAX_ITERATIONS = 10
 
-  return localCorners.map((corner) => {
-    const rotated = rotate(corner, state.heading)
-    return {
-      x: state.position.x + rotated.x,
-      y: state.position.y + rotated.y,
-    }
-  })
+type Penetration = {
+  depth: number
+  normal: { x: number; y: number }
 }
 
-function resolveCircleCollision(
+function pointInConvexPolygon(
   point: { x: number; y: number },
-  center: { x: number; y: number },
-  radius: number,
-  velocity: { x: number; y: number },
-  restitution: number,
-): {
-  point: { x: number; y: number }
-  velocity: { x: number; y: number }
-  hit: boolean
-} {
-  const dx = point.x - center.x
-  const dy = point.y - center.y
-  const dist = Math.hypot(dx, dy)
-  if (dist >= radius) {
-    return { point, velocity, hit: false }
+  polygon: Array<{ x: number; y: number }>,
+): boolean {
+  let sign = 0
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i]
+    const b = polygon[(i + 1) % polygon.length]
+    const cross = (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x)
+    if (Math.abs(cross) < 1e-8) continue
+    if (sign === 0) sign = Math.sign(cross)
+    else if (Math.sign(cross) !== sign) return false
   }
-
-  const nx = dist > 1e-6 ? dx / dist : 1
-  const ny = dist > 1e-6 ? dy / dist : 0
-  const penetration = radius - dist
-
-  const newPoint = {
-    x: point.x + nx * penetration,
-    y: point.y + ny * penetration,
-  }
-
-  const vn = velocity.x * nx + velocity.y * ny
-  if (vn >= 0) {
-    return { point: newPoint, velocity, hit: true }
-  }
-
-  const newVelocity = {
-    x: velocity.x - (1 + restitution) * vn * nx,
-    y: velocity.y - (1 + restitution) * vn * ny,
-  }
-
-  return { point: newPoint, velocity: newVelocity, hit: true }
+  return true
 }
 
-function resolveAabbCollision(
+/** Shortest push to move a point out of a rotated AABB (works for interior points). */
+function pointAabbPenetration(
   point: { x: number; y: number },
   obstacle: StaticObstacle,
-  velocity: { x: number; y: number },
-): {
-  point: { x: number; y: number }
-  velocity: { x: number; y: number }
-  hit: boolean
-} {
-  const local = rotate(
-    sub(point, obstacle.position),
-    -obstacle.rotation,
-  )
+): Penetration | null {
+  const local = rotate(sub(point, obstacle.position), -obstacle.rotation)
+  const halfW = obstacle.width * 0.5 + HULL_SKIN
+  const halfH = obstacle.height * 0.5 + HULL_SKIN
 
-  const halfW = obstacle.width * 0.5
-  const halfH = obstacle.height * 0.5
-  const margin = 0.05
+  const outsideX = Math.abs(local.x) - halfW
+  const outsideY = Math.abs(local.y) - halfH
+
+  if (outsideX > 0 && outsideY > 0) {
+    return null
+  }
+
+  if (outsideX <= 0 && outsideY <= 0) {
+    const penLeft = halfW + local.x
+    const penRight = halfW - local.x
+    const penBottom = halfH + local.y
+    const penTop = halfH - local.y
+    const minPen = Math.min(penLeft, penRight, penBottom, penTop)
+
+    let localNormal = { x: 0, y: 0 }
+    if (minPen === penLeft) localNormal = { x: -1, y: 0 }
+    else if (minPen === penRight) localNormal = { x: 1, y: 0 }
+    else if (minPen === penBottom) localNormal = { x: 0, y: -1 }
+    else localNormal = { x: 0, y: 1 }
+
+    const worldNormal = rotate(localNormal, obstacle.rotation)
+    return { depth: minPen, normal: worldNormal }
+  }
 
   const clampedX = clamp(local.x, -halfW, halfW)
   const clampedY = clamp(local.y, -halfH, halfH)
-
   const dx = local.x - clampedX
   const dy = local.y - clampedY
-  const distSq = dx * dx + dy * dy
-
-  if (distSq > margin * margin) {
-    return { point, velocity, hit: false }
+  const dist = Math.hypot(dx, dy)
+  if (dist < 1e-6 || dist >= HULL_SKIN) {
+    return null
   }
 
-  const dist = Math.max(Math.sqrt(distSq), 1e-6)
-  const nx = dx / dist
-  const ny = dy / dist
-  const penetration = margin - dist
+  const localNormal = { x: dx / dist, y: dy / dist }
+  const worldNormal = rotate(localNormal, obstacle.rotation)
+  return { depth: HULL_SKIN - dist, normal: worldNormal }
+}
 
-  const correctedLocal = {
-    x: local.x + nx * penetration,
-    y: local.y + ny * penetration,
+function circlePenetration(
+  point: { x: number; y: number },
+  center: { x: number; y: number },
+  radius: number,
+): Penetration | null {
+  const dx = point.x - center.x
+  const dy = point.y - center.y
+  const dist = Math.hypot(dx, dy)
+  const totalRadius = radius + HULL_SKIN
+  if (dist >= totalRadius) return null
+
+  if (dist < 1e-6) {
+    return { depth: totalRadius, normal: { x: 1, y: 0 } }
   }
 
-  const worldCorrected = rotate(correctedLocal, obstacle.rotation)
-  const newPoint = {
-    x: obstacle.position.x + worldCorrected.x,
-    y: obstacle.position.y + worldCorrected.y,
+  return {
+    depth: totalRadius - dist,
+    normal: { x: dx / dist, y: dy / dist },
+  }
+}
+
+function resolveBoundsPenetration(
+  hull: Array<{ x: number; y: number }>,
+  bounds: HarbourBounds,
+): Penetration | null {
+  let maxDepth = 0
+  let normal = { x: 0, y: 0 }
+
+  for (const point of hull) {
+    if (point.x < bounds.minX) {
+      const depth = bounds.minX - point.x
+      if (depth > maxDepth) {
+        maxDepth = depth
+        normal = { x: 1, y: 0 }
+      }
+    }
+    if (point.x > bounds.maxX) {
+      const depth = point.x - bounds.maxX
+      if (depth > maxDepth) {
+        maxDepth = depth
+        normal = { x: -1, y: 0 }
+      }
+    }
+    if (point.y < bounds.minY) {
+      const depth = bounds.minY - point.y
+      if (depth > maxDepth) {
+        maxDepth = depth
+        normal = { x: 0, y: 1 }
+      }
+    }
+    if (point.y > bounds.maxY) {
+      const depth = point.y - bounds.maxY
+      if (depth > maxDepth) {
+        maxDepth = depth
+        normal = { x: 0, y: -1 }
+      }
+    }
   }
 
-  const worldNormal = rotate({ x: nx, y: ny }, obstacle.rotation)
-  const vn = velocity.x * worldNormal.x + velocity.y * worldNormal.y
-  if (vn >= 0) {
-    return { point: newPoint, velocity, hit: true }
+  return maxDepth > 0 ? { depth: maxDepth, normal } : null
+}
+
+function findHullObstaclePenetration(
+  hull: Array<{ x: number; y: number }>,
+  obstacle: StaticObstacle,
+  boatCenter: { x: number; y: number },
+): Penetration | null {
+  let deepest: Penetration | null = null
+
+  if (obstacle.type === 'pole') {
+    const radius = Math.min(obstacle.width, obstacle.height) * 0.5
+    for (const point of hull) {
+      const pen = circlePenetration(point, obstacle.position, radius)
+      if (pen && (!deepest || pen.depth > deepest.depth)) deepest = pen
+    }
+    return deepest
   }
 
-  const restitution = obstacle.restitution
-  const newVelocity = {
-    x: velocity.x - (1 + restitution) * vn * worldNormal.x,
-    y: velocity.y - (1 + restitution) * vn * worldNormal.y,
+  for (const point of hull) {
+    const pen = pointAabbPenetration(point, obstacle)
+    if (pen && (!deepest || pen.depth > deepest.depth)) deepest = pen
   }
 
-  return { point: newPoint, velocity: newVelocity, hit: true }
+  for (const corner of getObstacleLocalCorners(obstacle)) {
+    if (pointInConvexPolygon(corner, hull)) {
+      const awayX = boatCenter.x - obstacle.position.x
+      const awayY = boatCenter.y - obstacle.position.y
+      const awayLen = Math.hypot(awayX, awayY)
+      const normal =
+        awayLen > 1e-6
+          ? { x: awayX / awayLen, y: awayY / awayLen }
+          : { x: 0, y: 1 }
+      const pen = { depth: HULL_SKIN + 0.12, normal }
+      if (!deepest || pen.depth > deepest.depth) deepest = pen
+    }
+  }
+
+  return deepest
+}
+
+function applyPenetrationResponse(
+  velocity: { x: number; y: number },
+  angularVelocity: number,
+  pen: Penetration,
+  restitution: number,
+): { velocity: { x: number; y: number }; angularVelocity: number } {
+  const vn = dot(velocity, pen.normal)
+  if (vn < 0) {
+    velocity = {
+      x: velocity.x - (1 + restitution) * vn * pen.normal.x,
+      y: velocity.y - (1 + restitution) * vn * pen.normal.y,
+    }
+  }
+  return { velocity, angularVelocity: angularVelocity * 0.82 }
 }
 
 export function resolveCollisions(
@@ -141,70 +210,48 @@ export function resolveCollisions(
   let angularVelocity = state.angularVelocity
   let collided = false
 
-  for (let iteration = 0; iteration < 3; iteration++) {
-    const testState = { ...state, position, velocity, angularVelocity }
-    const corners = getBoatCorners(testState, config)
+  for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+    const hull = getBoatHullWorldVertices(config, position, state.heading)
+    let moved = false
 
-    for (const corner of corners) {
-      if (corner.x < bounds.minX) {
-        position.x += bounds.minX - corner.x
-        velocity.x = Math.abs(velocity.x) * 0.15
-        collided = true
-      }
-      if (corner.x > bounds.maxX) {
-        position.x -= corner.x - bounds.maxX
-        velocity.x = -Math.abs(velocity.x) * 0.15
-        collided = true
-      }
-      if (corner.y < bounds.minY) {
-        position.y += bounds.minY - corner.y
-        velocity.y = Math.abs(velocity.y) * 0.15
-        collided = true
-      }
-      if (corner.y > bounds.maxY) {
-        position.y -= corner.y - bounds.maxY
-        velocity.y = -Math.abs(velocity.y) * 0.15
-        collided = true
-      }
+    const boundsPen = resolveBoundsPenetration(hull, bounds)
+    if (boundsPen) {
+      position.x += boundsPen.normal.x * boundsPen.depth
+      position.y += boundsPen.normal.y * boundsPen.depth
+      const response = applyPenetrationResponse(velocity, angularVelocity, boundsPen, 0.05)
+      velocity = response.velocity
+      angularVelocity = response.angularVelocity
+      collided = true
+      moved = true
     }
 
     for (const obstacle of obstacles) {
-      for (const corner of corners) {
-        if (obstacle.type === 'pole') {
-          const radius = Math.min(obstacle.width, obstacle.height) * 0.5
-          const result = resolveCircleCollision(
-            corner,
-            obstacle.position,
-            radius + 0.15,
-            velocity,
-            obstacle.restitution,
-          )
-          if (result.hit) {
-            collided = true
-            velocity = result.velocity
-            const offset = sub(result.point, corner)
-            position.x += offset.x
-            position.y += offset.y
-            angularVelocity *= 0.7
-          }
-        } else {
-          const result = resolveAabbCollision(corner, obstacle, velocity)
-          if (result.hit) {
-            collided = true
-            velocity = result.velocity
-            const offset = sub(result.point, corner)
-            position.x += offset.x
-            position.y += offset.y
-            angularVelocity *= 0.75
-          }
-        }
-      }
+      const hullNow = moved
+        ? getBoatHullWorldVertices(config, position, state.heading)
+        : hull
+      const pen = findHullObstaclePenetration(hullNow, obstacle, position)
+      if (!pen) continue
+
+      position.x += pen.normal.x * pen.depth
+      position.y += pen.normal.y * pen.depth
+      const response = applyPenetrationResponse(
+        velocity,
+        angularVelocity,
+        pen,
+        obstacle.restitution,
+      )
+      velocity = response.velocity
+      angularVelocity = response.angularVelocity
+      collided = true
+      moved = true
     }
+
+    if (!moved) break
   }
 
   if (collided) {
-    velocity.x *= 0.92
-    velocity.y *= 0.92
+    velocity.x *= 0.88
+    velocity.y *= 0.88
     angularVelocity *= 0.85
   }
 

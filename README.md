@@ -1,6 +1,6 @@
 # HarbourMaster
 
-Browser-based **Harbour Manoeuvre Trainer** for practising harbour manoeuvres with motorboats.
+Browser-based **Harbour Manoeuvre Trainer** for practising harbour manoeuvres with sailboats.
 
 The simulator is 2D top-down and models realistic boat behaviour via a custom physics engine in TypeScript — no general-purpose game physics engines.
 
