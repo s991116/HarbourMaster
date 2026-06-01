@@ -6,10 +6,19 @@ export function useKeyboardControls(): void {
   const adjustRudderStep = useSimulatorStore((s) => s.adjustRudderStep)
   const neutralControls = useSimulatorStore((s) => s.neutralControls)
   const resetScenario = useSimulatorStore((s) => s.resetScenario)
+  const resume = useSimulatorStore((s) => s.resume)
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) return
+
+      const { running } = useSimulatorStore.getState()
+
+      if (!running && event.key === 'Enter') {
+        event.preventDefault()
+        resume()
+        return
+      }
 
       switch (event.key) {
         case 'ArrowUp':
@@ -43,5 +52,5 @@ export function useKeyboardControls(): void {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [adjustThrottleStep, adjustRudderStep, neutralControls, resetScenario])
+  }, [adjustThrottleStep, adjustRudderStep, neutralControls, resetScenario, resume])
 }

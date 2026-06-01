@@ -26,9 +26,12 @@ export function computeRudderForces(
     return { force: { x: 0, y: 0 }, torque: 0 }
   }
 
+  // Rudder authority scales with |surge speed| (STW along the hull) — same idea ahead and astern.
   const waterFlowFactor = Math.min(speedAbs / 2.5, 1)
+  /** Astern is weaker than ahead at the same STW, but still grows with flow over the rudder. */
+  const REVERSE_RUDDER_AUTHORITY = 0.65
   const rudderEffectiveness = isReverse
-    ? waterFlowFactor * 0.35 * (1 - Math.min(speedAbs / 1.8, 0.5))
+    ? waterFlowFactor * REVERSE_RUDDER_AUTHORITY
     : waterFlowFactor
 
   const lateralForceMag =
@@ -40,10 +43,10 @@ export function computeRudderForces(
 
   const lateralForce = scale(sideways, lateralForceMag)
   const torque =
-    lateralForceMag *
+    -lateralForceMag *
     config.length *
     0.22 *
-    (isReverse ? 0.6 : 1) *
+    (isReverse ? 0.8 : 1) *
     Math.sign(state.rudderAngle || 1)
 
   return {

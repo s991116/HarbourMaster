@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber'
 import { BoatCollisionHullOutline } from './BoatCollisionHullOutline'
 import { BoatMesh } from './BoatMesh'
 import { CleatScreenPositionSync } from './CleatScreenPositionSync'
+import { PierCleatScreenSync } from './PierCleatScreenSync'
 import { CollisionHullScreenSync } from './CollisionHullScreenSync'
 import { HarbourEnvironment } from './HarbourEnvironment'
 import { MooringCleatDebugMarker3D } from './MooringCleatDebugMarker3D'
@@ -32,6 +33,7 @@ export function HarbourScene({ cleatDebug = false }: HarbourSceneProps) {
       <BoatMesh />
       <BoatCollisionHullOutline />
       <CleatScreenPositionSync />
+      <PierCleatScreenSync />
       <CollisionHullScreenSync />
       {cleatDebug ? <MooringCleatDebugMarker3D /> : null}
     </Canvas>

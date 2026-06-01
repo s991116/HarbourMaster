@@ -13,6 +13,13 @@ export function ensureSimulatorStoreFields(): void {
       useSimulatorStore.setState({ showCollisionHull: show })
     }
   }
+  if (typeof state.resume !== 'function') {
+    patch.resume = () => {
+      const s = useSimulatorStore.getState()
+      s.controller.start()
+      useSimulatorStore.setState({ running: true })
+    }
+  }
 
   if (Object.keys(patch).length > 0) {
     useSimulatorStore.setState(patch)

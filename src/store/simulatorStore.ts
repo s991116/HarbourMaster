@@ -24,6 +24,7 @@ type SimulatorStore = {
   setShowCollisionHull: (show: boolean) => void
   setScenario: (id: ScenarioId) => void
   setRunning: (running: boolean) => void
+  resume: () => void
   setThrottleStep: (step: number) => void
   setRudderStep: (step: number) => void
   adjustThrottleStep: (delta: number) => void
@@ -48,11 +49,10 @@ function stepsToInput(throttleStep: number, rudderStep: number): PhysicsInput {
 
 const initialScenario = getScenario('empty-basin')
 const controller = new SimulatorController(initialScenario.id)
-controller.start()
 
 export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   scenarioId: 'empty-basin',
-  running: true,
+  running: false,
   throttleStep: 0,
   rudderStep: 0,
   input: stepsToInput(0, 0),
@@ -69,10 +69,10 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
     const scenario = getScenario(id)
     controller.loadScenario(id)
     controller.setBoatConfig(scenario.boatConfig)
-    controller.start()
+    controller.stop()
     set({
       scenarioId: id,
-      running: true,
+      running: false,
       throttleStep: 0,
       rudderStep: 0,
       input: stepsToInput(0, 0),
@@ -85,6 +85,11 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
     if (running) controller.start()
     else controller.stop()
     set({ running })
+  },
+
+  resume: () => {
+    controller.start()
+    set({ running: true })
   },
 
   setThrottleStep: (step) => {
@@ -153,14 +158,14 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
     const scenario = getScenario(scenarioId)
     controller.resetScenario(scenarioId)
     controller.setBoatConfig(scenario.boatConfig)
-    controller.start()
+    controller.stop()
     set({
       throttleStep: 0,
       rudderStep: 0,
       input: stepsToInput(0, 0),
       boatConfig: { ...scenario.boatConfig },
       snapshot: controller.getSnapshot(),
-      running: true,
+      running: false,
     })
   },
 

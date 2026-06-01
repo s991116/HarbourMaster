@@ -1,5 +1,6 @@
 import type { BoatConfig } from '../physics/types'
 import { useSimulatorStore } from '../store/simulatorStore'
+import { harbourDetailsClass, harbourInputClass, harbourSelectClass } from './panelStyles'
 
 type NumberField = {
   key: keyof BoatConfig
@@ -33,8 +34,8 @@ export function SettingsPanel() {
   const setShowCollisionHull = useSimulatorStore((s) => s.setShowCollisionHull)
 
   return (
-    <details className="group mt-3 rounded-lg border border-slate-700 bg-slate-900/50">
-      <summary className="cursor-pointer list-none px-3 py-2 text-sm font-medium text-sky-200 marker:content-none [&::-webkit-details-marker]:hidden">
+    <details className={`${harbourDetailsClass} mt-2`}>
+      <summary className="cursor-pointer list-none px-2 py-1.5 text-xs font-medium text-sky-200 marker:content-none [&::-webkit-details-marker]:hidden">
         <span className="flex items-center justify-between gap-2">
           Settings
           <span className="text-xs text-slate-400 group-open:rotate-180 transition-transform">
@@ -49,7 +50,7 @@ export function SettingsPanel() {
             type="checkbox"
             checked={showCollisionHull}
             onChange={(e) => setShowCollisionHull(e.target.checked)}
-            className="rounded border-slate-600 bg-slate-950 accent-sky-400"
+            className="rounded border-slate-700 bg-slate-900/50 accent-sky-400"
           />
           Show collision hull
         </label>
@@ -64,7 +65,7 @@ export function SettingsPanel() {
                   keelType: e.target.value as BoatConfig['keelType'],
                 })
               }
-              className="mt-1 w-full rounded border border-slate-600 bg-slate-950 px-2 py-1 text-sm text-white"
+              className={`mt-1 ${harbourSelectClass} text-sm`}
             >
               <option value="long-keel">Long keel</option>
               <option value="fin-keel">Fin keel</option>
@@ -80,7 +81,7 @@ export function SettingsPanel() {
                   propellerRotation: e.target.value as BoatConfig['propellerRotation'],
                 })
               }
-              className="mt-1 w-full rounded border border-slate-600 bg-slate-950 px-2 py-1 text-sm text-white"
+              className={`mt-1 ${harbourSelectClass} text-sm`}
             >
               <option value="clockwise">Clockwise</option>
               <option value="counter-clockwise">Counter-clockwise</option>
@@ -98,7 +99,7 @@ export function SettingsPanel() {
               onChange={(e) =>
                 updateBoatConfig({ [key]: Number(e.target.value) } as Partial<BoatConfig>)
               }
-              className="mt-1 w-full rounded border border-slate-600 bg-slate-950 px-2 py-1 text-sm text-white"
+              className={`mt-1 ${harbourInputClass}`}
             />
           </label>
         ))}

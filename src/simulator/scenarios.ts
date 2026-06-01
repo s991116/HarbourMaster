@@ -14,6 +14,12 @@ export type ScenarioId =
   | 'departure-crosswind'
   | 'narrow-berth'
 
+/** Fixed mooring point on a quay/pier (world physics x/y). */
+export type PierMooringCleat = {
+  id: string
+  position: { x: number; y: number }
+}
+
 export type Scenario = {
   id: ScenarioId
   name: string
@@ -24,6 +30,8 @@ export type Scenario = {
   wind: Wind
   obstacles: StaticObstacle[]
   bounds: HarbourBounds
+  /** Quay cleats for mooring-line UX (optional per scenario). */
+  pierCleats: PierMooringCleat[]
 }
 
 const DEFAULT_BOUNDS: HarbourBounds = {
@@ -101,6 +109,7 @@ export const SCENARIOS: Scenario[] = [
     wind: { speed: 2, direction: Math.PI * 0.75 },
     obstacles: [],
     bounds: DEFAULT_BOUNDS,
+    pierCleats: [],
   },
   {
     id: 'berthing',
@@ -125,6 +134,7 @@ export const SCENARIOS: Scenario[] = [
       quay('berth-quay', 18, 8, 60, 2.5),
     ],
     bounds: DEFAULT_BOUNDS,
+    pierCleats: [],
   },
   {
     id: 'departure-crosswind',
@@ -148,10 +158,18 @@ export const SCENARIOS: Scenario[] = [
       quay('starboard-quay', 52, 0, 3, 82),
       quay('port-quay', -52, 0, 3, 82),
       quay('berth-quay', 18, 8, 60, 2.5),
-      pole('bollard-a', 12, 10),
-      pole('bollard-b', 28, 10),
     ],
     bounds: DEFAULT_BOUNDS,
+    // Along south edge of berth-quay (y≈6.85), facing the boat
+    pierCleats: [
+      { id: 'pier-1', position: vec2(-4, 6.85) },
+      { id: 'pier-2', position: vec2(4, 6.85) },
+      { id: 'pier-3', position: vec2(12, 6.85) },
+      { id: 'pier-4', position: vec2(20, 6.85) },
+      { id: 'pier-5', position: vec2(28, 6.85) },
+      { id: 'pier-6', position: vec2(36, 6.85) },
+      { id: 'pier-7', position: vec2(44, 6.85) },
+    ],
   },
   {
     id: 'narrow-berth',
@@ -179,6 +197,7 @@ export const SCENARIOS: Scenario[] = [
       pole('pile-b', 10, 22),
     ],
     bounds: DEFAULT_BOUNDS,
+    pierCleats: [],
   },
 ]
 

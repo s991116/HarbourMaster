@@ -1,5 +1,6 @@
 import { SCENARIOS, useSimulatorStore } from '../store/simulatorStore'
 import type { ScenarioId } from '../simulator/scenarios'
+import { harbourInsetClass, harbourPanelClass, harbourSelectClass } from './panelStyles'
 import { SettingsPanel } from './SettingsPanel'
 
 type ScenarioSelectorProps = {
@@ -10,10 +11,8 @@ export function ScenarioSelector({ cleatDebug = false }: ScenarioSelectorProps) 
   const scenarioId = useSimulatorStore((s) => s.scenarioId)
   const setScenario = useSimulatorStore((s) => s.setScenario)
   const resetScenario = useSimulatorStore((s) => s.resetScenario)
-  const activeScenario = SCENARIOS.find((s) => s.id === scenarioId)
-
   return (
-    <div className="absolute left-4 top-4 z-10 w-80 rounded-xl border border-sky-400/30 bg-slate-950/80 p-4 backdrop-blur">
+    <div className={`absolute left-3 top-3 z-10 w-56 ${harbourPanelClass}`}>
       {cleatDebug ? (
         <div
           style={{
@@ -30,32 +29,14 @@ export function ScenarioSelector({ cleatDebug = false }: ScenarioSelectorProps) 
           Cleat debug aktiv (React panel)
         </div>
       ) : null}
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold text-white">
-            Harbour Manoeuvre Trainer
-          </h1>
-          <p className="mt-1 text-xs text-slate-300">
-            Realistic 2D harbour simulator for sailboat manoeuvres
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={resetScenario}
-          className="rounded-lg border border-sky-400/40 px-2 py-1 text-xs text-sky-200 transition hover:bg-sky-900/40"
-        >
-          Reset (R)
-        </button>
-      </div>
-
-      <label className="mt-4 block">
-        <span className="text-xs uppercase tracking-[0.15em] text-sky-300/80">
+      <label className="block">
+        <span className="text-[10px] uppercase tracking-[0.12em] text-sky-300/80">
           Scenario
         </span>
         <select
           value={scenarioId}
           onChange={(e) => setScenario(e.target.value as ScenarioId)}
-          className="mt-1 w-full rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm text-white"
+          className={`mt-0.5 ${harbourSelectClass}`}
         >
           {SCENARIOS.map((scenario) => (
             <option key={scenario.id} value={scenario.id}>
@@ -65,13 +46,15 @@ export function ScenarioSelector({ cleatDebug = false }: ScenarioSelectorProps) 
         </select>
       </label>
 
-      {activeScenario && (
-        <p className="mt-2 text-xs leading-relaxed text-slate-400">
-          {activeScenario.objective}
-        </p>
-      )}
-
       <SettingsPanel />
+
+      <button
+        type="button"
+        onClick={resetScenario}
+        className={`mt-2 w-full px-2 py-1 text-[10px] text-sky-200 transition hover:border-slate-600 ${harbourInsetClass}`}
+      >
+        Reset (R)
+      </button>
     </div>
   )
 }
