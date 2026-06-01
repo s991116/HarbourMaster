@@ -2,14 +2,34 @@ import { SCENARIOS, useSimulatorStore } from '../store/simulatorStore'
 import type { ScenarioId } from '../simulator/scenarios'
 import { SettingsPanel } from './SettingsPanel'
 
-export function ScenarioSelector() {
+type ScenarioSelectorProps = {
+  cleatDebug?: boolean
+}
+
+export function ScenarioSelector({ cleatDebug = false }: ScenarioSelectorProps) {
   const scenarioId = useSimulatorStore((s) => s.scenarioId)
   const setScenario = useSimulatorStore((s) => s.setScenario)
   const resetScenario = useSimulatorStore((s) => s.resetScenario)
   const activeScenario = SCENARIOS.find((s) => s.id === scenarioId)
 
   return (
-    <div className="absolute left-4 top-4 w-80 rounded-xl border border-sky-400/30 bg-slate-950/80 p-4 backdrop-blur">
+    <div className="absolute left-4 top-4 z-10 w-80 rounded-xl border border-sky-400/30 bg-slate-950/80 p-4 backdrop-blur">
+      {cleatDebug ? (
+        <div
+          style={{
+            marginBottom: 12,
+            padding: '8px 10px',
+            borderRadius: 8,
+            backgroundColor: '#dc2626',
+            color: '#fff',
+            fontSize: 11,
+            fontWeight: 600,
+            lineHeight: 1.4,
+          }}
+        >
+          Cleat debug aktiv (React panel)
+        </div>
+      ) : null}
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-lg font-semibold text-white">

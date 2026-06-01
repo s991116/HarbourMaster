@@ -18,8 +18,10 @@ type SimulatorStore = {
   rudderStep: number
   input: PhysicsInput
   boatConfig: BoatConfig
+  showCollisionHull: boolean
   snapshot: PhysicsSnapshot
   controller: SimulatorController
+  setShowCollisionHull: (show: boolean) => void
   setScenario: (id: ScenarioId) => void
   setRunning: (running: boolean) => void
   setThrottleStep: (step: number) => void
@@ -55,8 +57,13 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   rudderStep: 0,
   input: stepsToInput(0, 0),
   boatConfig: { ...initialScenario.boatConfig },
+  showCollisionHull: false,
   snapshot: controller.getSnapshot(),
   controller,
+
+  setShowCollisionHull: (show) => {
+    set({ showCollisionHull: show })
+  },
 
   setScenario: (id) => {
     const scenario = getScenario(id)

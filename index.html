@@ -4,10 +4,76 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HarbourMaster — Harbour Manoeuvre Trainer</title>
+    <title>HarbourMaster (cleat-ui)</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      ;(function () {
+        var qs = window.location.search + window.location.hash
+        var cleatDebug =
+          /(?:^|[?&#])cleatDebug(?:=1|=true|(?=[&#]|$))/.test(qs) &&
+          !/(?:^|[?&#])cleatDebug=0/.test(qs)
+        if (!cleatDebug) return
+
+        var wrap = document.createElement('div')
+        wrap.id = 'hm-static-cleat-debug'
+        wrap.setAttribute(
+          'style',
+          [
+            'position:fixed',
+            'inset:0',
+            'z-index:2147483647',
+            'display:flex',
+            'align-items:center',
+            'justify-content:center',
+            'pointer-events:none',
+            'font-family:system-ui,sans-serif',
+          ].join(';'),
+        )
+
+        var circle = document.createElement('div')
+        circle.setAttribute(
+          'style',
+          [
+            'width:120px',
+            'height:120px',
+            'border-radius:50%',
+            'background:#ff2222',
+            'border:6px solid #fff',
+            'box-shadow:0 0 28px rgba(255,34,34,.95)',
+          ].join(';'),
+        )
+
+        var label = document.createElement('div')
+        label.setAttribute(
+          'style',
+          [
+            'margin-top:16px',
+            'padding:10px 14px',
+            'max-width:340px',
+            'border-radius:8px',
+            'background:rgba(2,6,23,.94)',
+            'border:1px solid rgba(251,191,36,.7)',
+            'color:#fde68a',
+            'font-size:12px',
+            'line-height:1.45',
+            'text-align:center',
+          ].join(';'),
+        )
+        label.textContent = 'Cleat debug (?cleatDebug=1) — slå fra med ?cleatDebug=0'
+
+        var col = document.createElement('div')
+        col.setAttribute(
+          'style',
+          'display:flex;flex-direction:column;align-items:center;',
+        )
+        col.appendChild(circle)
+        col.appendChild(label)
+        wrap.appendChild(col)
+        document.body.appendChild(wrap)
+      })()
+    </script>
   </body>
 </html>

@@ -14,7 +14,7 @@ export function ControlsPanel() {
   const neutralControls = useSimulatorStore((s) => s.neutralControls)
 
   return (
-    <div className="absolute bottom-4 right-4 w-72 rounded-xl border border-sky-400/30 bg-slate-950/80 p-4 backdrop-blur">
+    <div className="absolute bottom-4 right-4 z-10 w-72 rounded-xl border border-sky-400/30 bg-slate-950/80 p-4 backdrop-blur">
       <div className="text-xs uppercase tracking-[0.2em] text-sky-300/80">
         Controls
       </div>

@@ -20,7 +20,7 @@ export function WindIndicator() {
   }, [directionDegrees])
 
   return (
-    <div className="absolute right-4 top-4 w-56 rounded-xl border border-sky-400/30 bg-slate-950/80 px-4 py-3 backdrop-blur">
+    <div className="absolute right-4 top-4 z-10 w-56 rounded-xl border border-sky-400/30 bg-slate-950/80 px-4 py-3 backdrop-blur">
       <div className="text-xs uppercase tracking-[0.2em] text-sky-300/80">
         Wind
       </div>

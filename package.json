@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:stop": "sh -c 'lsof -ti :5173 | xargs kill 2>/dev/null; echo Port 5173 cleared (or was already free).'",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

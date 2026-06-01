@@ -27,13 +27,15 @@ const NUMBER_FIELDS: NumberField[] = [
 
 export function SettingsPanel() {
   const boatConfig = useSimulatorStore((s) => s.boatConfig)
+  const showCollisionHull = useSimulatorStore((s) => s.showCollisionHull)
   const updateBoatConfig = useSimulatorStore((s) => s.updateBoatConfig)
   const resetBoatConfig = useSimulatorStore((s) => s.resetBoatConfig)
+  const setShowCollisionHull = useSimulatorStore((s) => s.setShowCollisionHull)
 
   return (
     <details className="group mt-3 rounded-lg border border-slate-700 bg-slate-900/50">
       <summary className="cursor-pointer list-none px-3 py-2 text-sm font-medium text-sky-200 marker:content-none [&::-webkit-details-marker]:hidden">
-        <span className="flex items-center justify-between">
+        <span className="flex items-center justify-between gap-2">
           Settings
           <span className="text-xs text-slate-400 group-open:rotate-180 transition-transform">
             ▼
@@ -42,6 +44,16 @@ export function SettingsPanel() {
       </summary>
 
       <div className="max-h-72 space-y-3 overflow-y-auto border-t border-slate-700 px-3 py-3">
+        <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-300">
+          <input
+            type="checkbox"
+            checked={showCollisionHull}
+            onChange={(e) => setShowCollisionHull(e.target.checked)}
+            className="rounded border-slate-600 bg-slate-950 accent-sky-400"
+          />
+          Show collision hull
+        </label>
+
         <div className="grid grid-cols-2 gap-2">
           <label className="block text-xs text-slate-300">
             Keel type
