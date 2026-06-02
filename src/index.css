@@ -7,6 +7,10 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
   font-family:
     'Segoe UI',
     system-ui,
@@ -14,4 +18,8 @@ body,
     sans-serif;
   background: #0b1f33;
   color: #e8f1f8;
+}
+
+.touch-pan-y {
+  touch-action: pan-y;
 }

@@ -1,6 +1,10 @@
 import { SCENARIOS, useSimulatorStore } from '../store/simulatorStore'
 import type { ScenarioId } from '../simulator/scenarios'
-import { harbourInsetClass, harbourPanelClass, harbourSelectClass } from './panelStyles'
+import {
+  harbourActionButtonClass,
+  harbourPanelClass,
+  harbourSelectClass,
+} from './panelStyles'
 import { SettingsPanel } from './SettingsPanel'
 
 type ScenarioSelectorProps = {
@@ -11,8 +15,11 @@ export function ScenarioSelector({ cleatDebug = false }: ScenarioSelectorProps) 
   const scenarioId = useSimulatorStore((s) => s.scenarioId)
   const setScenario = useSimulatorStore((s) => s.setScenario)
   const resetScenario = useSimulatorStore((s) => s.resetScenario)
+
   return (
-    <div className={`absolute left-3 top-3 z-10 w-56 ${harbourPanelClass}`}>
+    <div
+      className={`absolute left-3 top-3 z-10 w-[min(100%,14rem)] sm:w-56 ${harbourPanelClass}`}
+    >
       {cleatDebug ? (
         <div
           style={{
@@ -48,11 +55,7 @@ export function ScenarioSelector({ cleatDebug = false }: ScenarioSelectorProps) 
 
       <SettingsPanel />
 
-      <button
-        type="button"
-        onClick={resetScenario}
-        className={`mt-2 w-full px-2 py-1 text-[10px] text-sky-200 transition hover:border-slate-600 ${harbourInsetClass}`}
-      >
+      <button type="button" onClick={resetScenario} className={`mt-2 ${harbourActionButtonClass}`}>
         Reset (R)
       </button>
     </div>
