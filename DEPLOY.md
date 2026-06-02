@@ -2,7 +2,7 @@
 
 Same hosting model as [app.sailboatadventure.dk](https://app.sailboatadventure.dk/) (Cloudflare Pages + CNAME at one.com).
 
-## Option A — Cloudflare Dashboard (matches boatlog)
+## Recommended — Cloudflare Dashboard (same as boatlog)
 
 1. Log in at [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
 2. Select **s991116/HarbourMaster**, branch **main**.
@@ -10,40 +10,50 @@ Same hosting model as [app.sailboatadventure.dk](https://app.sailboatadventure.d
    - Build command: `npm run build`
    - Build output directory: `dist`
    - Root directory: `/`
-   - Node.js version: **20**
-4. Project name: **harbourmaster** → preview URL: `https://harbourmaster.pages.dev`
-5. **Custom domains** → add `harbour.sailboatadventure.dk`.
-6. At **one.com** DNS for `sailboatadventure.dk`, add (same panel as the `app` record):
+   - Node.js version: **22** (or use `.nvmrc` in repo)
+4. Project name: **harbourmaster** → live URL: `https://harbourmaster.pages.dev`
+5. Wait for the first build to succeed, then open **Custom domains** → add `harbour.sailboatadventure.dk`.
+6. In **one.com** DNS for `sailboatadventure.dk` (same place as the `app` → `boatlog.pages.dev` record):
+   - **Remove** any `harbour` **A-record** pointing at one.com web hosting (e.g. `46.30.213.123`).
+   - Add or update:
 
    | Type  | Host    | Target                 |
    |-------|---------|------------------------|
    | CNAME | harbour | harbourmaster.pages.dev |
 
-7. Wait for SSL (usually 5–15 minutes), then open https://harbour.sailboatadventure.dk
+7. Wait 5–15 minutes for SSL, then test https://harbour.sailboatadventure.dk
 
-## Option B — GitHub Actions (this repo)
+### Verify DNS
+
+```bash
+dig harbour.sailboatadventure.dk CNAME +short
+# should show: harbourmaster.pages.dev.
+```
+
+## Optional — GitHub Actions deploy
 
 Workflow: [`.github/workflows/deploy-cloudflare-pages.yml`](.github/workflows/deploy-cloudflare-pages.yml)
 
-Add repository secrets at **GitHub → HarbourMaster → Settings → Secrets → Actions**:
+- **Build** runs on every push to `main` (validates the project in CI).
+- **Deploy** runs only if these repository secrets exist:
 
 | Secret | Value |
 |--------|--------|
-| `CLOUDFLARE_API_TOKEN` | API token with **Cloudflare Pages → Edit** (create at [API tokens](https://dash.cloudflare.com/profile/api-tokens)) |
-| `CLOUDFLARE_ACCOUNT_ID` | Your account ID (Dashboard → any zone → right sidebar, or Workers & Pages overview) |
+| `CLOUDFLARE_API_TOKEN` | API token with **Cloudflare Pages → Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | `a3413f869033d15b29634d0f74804877` (Philip.juhl@gmail.com account) |
 
-Push to `main` or run the workflow manually. Then complete steps 5–7 from Option A for the custom domain and one.com DNS.
+If you use Dashboard Git integration only, you do not need these secrets.
 
-## Verify locally
+## Local check
 
 ```bash
-npm ci
+npm install
 npm run build
 npm run preview
 ```
 
 ## Troubleshooting
 
-- **Blank page**: confirm build output is `dist` and no custom `base` in `vite.config.ts`.
-- **DNS**: `dig harbour.sailboatadventure.dk CNAME` should show `harbourmaster.pages.dev`.
-- **SSL pending**: wait and confirm the domain is **Active** on the Pages project.
+- **Blank page**: build output must be `dist`; no custom `base` in `vite.config.ts`.
+- **Wrong site / one.com default page**: `harbour` must be **CNAME** to `harbourmaster.pages.dev`, not an A-record to one.com.
+- **SSL pending**: wait; confirm domain is **Active** on the Pages project.
