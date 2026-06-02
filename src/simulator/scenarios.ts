@@ -40,6 +40,9 @@ const DEFAULT_BOUNDS: HarbourBounds = {
   minY: -55,
   maxY: 55,
 }
+const EMPTY_BASIN_EDGE_THICKNESS = 6
+const EMPTY_BASIN_SIDE_INSET = 0
+const EMPTY_BASIN_VERTICAL_INSET = 5
 
 function quay(
   id: string,
@@ -91,11 +94,58 @@ function parkedBoat(
   }
 }
 
+function createBasinFrame(
+  bounds: HarbourBounds,
+  thickness: number,
+  insetX = 0,
+  insetY = 0,
+): StaticObstacle[] {
+  const innerMinX = bounds.minX + insetX
+  const innerMaxX = bounds.maxX - insetX
+  const innerMinY = bounds.minY + insetY
+  const innerMaxY = bounds.maxY - insetY
+  const width = innerMaxX - innerMinX
+  const depth = innerMaxY - innerMinY
+  const centerX = (innerMinX + innerMaxX) * 0.5
+  const centerY = (innerMinY + innerMaxY) * 0.5
+
+  return [
+    quay(
+      'empty-basin-north',
+      centerX,
+      innerMaxY - thickness * 0.5,
+      width,
+      thickness,
+    ),
+    quay(
+      'empty-basin-south',
+      centerX,
+      innerMinY + thickness * 0.5,
+      width,
+      thickness,
+    ),
+    quay(
+      'empty-basin-east',
+      innerMaxX - thickness * 0.5,
+      centerY,
+      thickness,
+      depth - thickness * 2,
+    ),
+    quay(
+      'empty-basin-west',
+      innerMinX + thickness * 0.5,
+      centerY,
+      thickness,
+      depth - thickness * 2,
+    ),
+  ]
+}
+
 export const SCENARIOS: Scenario[] = [
   {
     id: 'empty-basin',
     name: 'Empty basin',
-    description: 'Open basin with no obstacles.',
+    description: 'Open basin enclosed by a uniform perimeter edge.',
     objective: 'Learn speed, inertia, and prop walk in astern gear.',
     boatConfig: FIN_KEEL_BOAT,
     initialState: {
@@ -107,7 +157,12 @@ export const SCENARIOS: Scenario[] = [
       rudderAngle: 0,
     },
     wind: { speed: 2, direction: Math.PI * 0.75 },
-    obstacles: [],
+    obstacles: createBasinFrame(
+      DEFAULT_BOUNDS,
+      EMPTY_BASIN_EDGE_THICKNESS,
+      EMPTY_BASIN_SIDE_INSET,
+      EMPTY_BASIN_VERTICAL_INSET,
+    ),
     bounds: DEFAULT_BOUNDS,
     pierCleats: [],
   },
@@ -127,10 +182,12 @@ export const SCENARIOS: Scenario[] = [
     },
     wind: { speed: 3.5, direction: Math.PI * 0.55 },
     obstacles: [
-      quay('north-quay', 0, 42, 110, 3),
-      quay('south-quay', 0, -42, 110, 3),
-      quay('starboard-quay', 52, 0, 3, 82),
-      quay('port-quay', -52, 0, 3, 82),
+      ...createBasinFrame(
+        DEFAULT_BOUNDS,
+        EMPTY_BASIN_EDGE_THICKNESS,
+        EMPTY_BASIN_SIDE_INSET,
+        EMPTY_BASIN_VERTICAL_INSET,
+      ),
       quay('berth-quay', 18, 8, 60, 2.5),
     ],
     bounds: DEFAULT_BOUNDS,
@@ -153,10 +210,12 @@ export const SCENARIOS: Scenario[] = [
     },
     wind: { speed: 7, direction: Math.PI * 0.5 },
     obstacles: [
-      quay('north-quay', 0, 42, 110, 3),
-      quay('south-quay', 0, -42, 110, 3),
-      quay('starboard-quay', 52, 0, 3, 82),
-      quay('port-quay', -52, 0, 3, 82),
+      ...createBasinFrame(
+        DEFAULT_BOUNDS,
+        EMPTY_BASIN_EDGE_THICKNESS,
+        EMPTY_BASIN_SIDE_INSET,
+        EMPTY_BASIN_VERTICAL_INSET,
+      ),
       quay('berth-quay', 18, 8, 60, 2.5),
     ],
     bounds: DEFAULT_BOUNDS,
@@ -187,10 +246,12 @@ export const SCENARIOS: Scenario[] = [
     },
     wind: { speed: 5, direction: Math.PI * 0.45 },
     obstacles: [
-      quay('north-quay', 0, 42, 110, 3),
-      quay('south-quay', 0, -42, 110, 3),
-      quay('starboard-quay', 52, 0, 3, 82),
-      quay('port-quay', -52, 0, 3, 82),
+      ...createBasinFrame(
+        DEFAULT_BOUNDS,
+        EMPTY_BASIN_EDGE_THICKNESS,
+        EMPTY_BASIN_SIDE_INSET,
+        EMPTY_BASIN_VERTICAL_INSET,
+      ),
       parkedBoat('boat-port', -6, 12, 10, 3.2, 0),
       parkedBoat('boat-starboard', 6, 12, 10, 3.2, 0),
       pole('pile-a', -10, 22),
