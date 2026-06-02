@@ -1,7 +1,6 @@
 name = "harbourmaster"
 compatibility_date = "2024-06-01"
 pages_build_output_dir = "dist"
-account_id = "a3413f869033d15b29634d0f74804877"
 
 [vars]
 # Production deploy uses Cloudflare Pages (see DEPLOY.md).
