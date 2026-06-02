@@ -8,7 +8,8 @@
     "dev:stop": "sh -c 'lsof -ti :5173 | xargs kill 2>/dev/null; echo Port 5173 cleared (or was already free).'",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:pages": "npm run build && wrangler pages deploy dist --project-name=harbourmaster --branch=main"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
