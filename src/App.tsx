@@ -4,20 +4,14 @@ import { PauseOverlay } from './components/PauseOverlay'
 import { PierCleatMarkersOverlay } from './components/PierCleatMarkersOverlay'
 import { CollisionHullScreenOverlay } from './components/CollisionHullScreenOverlay'
 import { BasinViewport } from './components/BasinViewport'
-import { ControlsPanel } from './components/ControlsPanel'
-import { MobileControlOverlay } from './components/MobileControlOverlay'
+import { HarbourPanelsChrome } from './components/HarbourPanelsChrome'
 import { MooringCleatDebugOverlay } from './components/MooringCleatDebugOverlay'
-import { HarbourLandscapeSidebar } from './components/HarbourLandscapeSidebar'
-import { ScenarioSelector } from './components/ScenarioSelector'
-import { WindIndicator } from './components/WindIndicator'
 import { isMooringCleatDebugEnabled } from './debug/mooringCleatDebug'
 import { useKeyboardControls } from './hooks/useKeyboardControls'
 import { useLandscapeLayout } from './hooks/useLandscapeLayout'
-import { useTouchPrimary } from './hooks/useTouchPrimary'
 
 function App() {
   useKeyboardControls()
-  const touchPrimary = useTouchPrimary()
   const landscape = useLandscapeLayout()
   const [cleatDebug, setCleatDebug] = useState(false)
 
@@ -34,12 +28,8 @@ function App() {
     }
   }, [])
 
-  const basinClass = landscape
-    ? 'relative min-h-0 min-w-0 flex-1'
-    : 'relative h-full w-full min-h-0'
-
   const basin = (
-    <div className={basinClass}>
+    <div className="relative min-h-0 min-w-0 flex-1">
       <BasinViewport cleatDebug={cleatDebug}>
         <BoatMooringCleatMarkersOverlay />
         <PierCleatMarkersOverlay />
@@ -53,18 +43,16 @@ function App() {
   if (landscape) {
     return (
       <div className="flex h-dvh max-h-dvh w-full flex-row overflow-hidden">
-        <HarbourLandscapeSidebar cleatDebug={cleatDebug} />
+        <HarbourPanelsChrome cleatDebug={cleatDebug} orientation="landscape" />
         {basin}
       </div>
     )
   }
 
   return (
-    <div className="relative h-dvh max-h-dvh w-full overflow-hidden">
+    <div className="flex h-dvh max-h-dvh w-full flex-col overflow-hidden">
+      <HarbourPanelsChrome cleatDebug={cleatDebug} orientation="portrait" />
       {basin}
-      <ScenarioSelector cleatDebug={cleatDebug} />
-      <WindIndicator />
-      {touchPrimary ? <MobileControlOverlay /> : <ControlsPanel />}
     </div>
   )
 }

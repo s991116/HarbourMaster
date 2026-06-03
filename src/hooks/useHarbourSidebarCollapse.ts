@@ -2,15 +2,22 @@ import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 're
 
 const TOP_SECTION_SELECTOR = '[data-sidebar-top]'
 
+export type HarbourPanelsOrientation = 'landscape' | 'portrait'
+
 /**
- * Min height (px) of the scrollable area above Controls before Scenario and Wind
- * may both stay open at the same time. Below this, opening one closes the other.
+ * Min height (px) of the scrollable area above Controls (landscape) before Scenario
+ * and Wind may both stay open. Below this, opening one closes the other.
  */
 export const MIN_TOP_SECTION_HEIGHT_BOTH_OPEN_PX = 520
 
-export function canOpenScenarioAndWindTogether(aside: HTMLElement): boolean {
-  const top = aside.querySelector<HTMLElement>(TOP_SECTION_SELECTOR)
-  const height = top?.clientHeight ?? aside.clientHeight
+export function canOpenScenarioAndWindTogether(
+  container: HTMLElement,
+  orientation: HarbourPanelsOrientation,
+): boolean {
+  if (orientation === 'portrait') return false
+
+  const top = container.querySelector<HTMLElement>(TOP_SECTION_SELECTOR)
+  const height = top?.clientHeight ?? container.clientHeight
   if (height < 1) return true
   return height >= MIN_TOP_SECTION_HEIGHT_BOTH_OPEN_PX
 }
@@ -18,8 +25,9 @@ export function canOpenScenarioAndWindTogether(aside: HTMLElement): boolean {
 type ExclusivePanel = 'scenario' | 'wind'
 
 export function useHarbourSidebarCollapse(
-  asideRef: RefObject<HTMLElement | null>,
+  containerRef: RefObject<HTMLElement | null>,
   enabled: boolean,
+  orientation: HarbourPanelsOrientation,
 ) {
   const [scenarioOpen, setScenarioOpen] = useState(false)
   const [windOpen, setWindOpen] = useState(true)
@@ -30,9 +38,8 @@ export function useHarbourSidebarCollapse(
   scenarioOpenRef.current = scenarioOpen
   windOpenRef.current = windOpen
 
-  const resolveBothOpenConflict = (aside: HTMLElement) => {
+  const resolveBothOpenConflict = () => {
     if (!scenarioOpenRef.current || !windOpenRef.current) return
-    if (canOpenScenarioAndWindTogether(aside)) return
 
     if (lastOpenedRef.current === 'scenario') {
       setWindOpen(false)
@@ -41,16 +48,25 @@ export function useHarbourSidebarCollapse(
     }
   }
 
-  const applyHeightRule = (aside: HTMLElement) => {
-    if (aside.clientHeight < 1) return
-    resolveBothOpenConflict(aside)
+  const applyLayoutRule = (container: HTMLElement) => {
+    if (orientation === 'portrait') {
+      resolveBothOpenConflict()
+      return
+    }
+
+    if (container.clientHeight < 1) return
+    if (canOpenScenarioAndWindTogether(container, orientation)) return
+    resolveBothOpenConflict()
   }
 
   const openScenario = (open: boolean) => {
     if (open) {
       lastOpenedRef.current = 'scenario'
-      const aside = asideRef.current
-      if (aside && !canOpenScenarioAndWindTogether(aside)) {
+      const container = containerRef.current
+      if (
+        orientation === 'portrait' ||
+        (container && !canOpenScenarioAndWindTogether(container, orientation))
+      ) {
         setWindOpen(false)
       }
       setScenarioOpen(true)
@@ -62,8 +78,11 @@ export function useHarbourSidebarCollapse(
   const openWind = (open: boolean) => {
     if (open) {
       lastOpenedRef.current = 'wind'
-      const aside = asideRef.current
-      if (aside && !canOpenScenarioAndWindTogether(aside)) {
+      const container = containerRef.current
+      if (
+        orientation === 'portrait' ||
+        (container && !canOpenScenarioAndWindTogether(container, orientation))
+      ) {
         setScenarioOpen(false)
       }
       setWindOpen(true)
@@ -79,10 +98,19 @@ export function useHarbourSidebarCollapse(
       return
     }
 
-    const aside = asideRef.current
-    if (!aside || aside.clientHeight < 1) return
+    const container = containerRef.current
+    if (!container) return
 
-    if (canOpenScenarioAndWindTogether(aside)) {
+    if (orientation === 'portrait') {
+      setScenarioOpen(false)
+      setWindOpen(true)
+      lastOpenedRef.current = 'wind'
+      return
+    }
+
+    if (container.clientHeight < 1) return
+
+    if (canOpenScenarioAndWindTogether(container, orientation)) {
       setScenarioOpen(true)
       setWindOpen(true)
       return
@@ -91,27 +119,27 @@ export function useHarbourSidebarCollapse(
     setScenarioOpen(false)
     setWindOpen(true)
     lastOpenedRef.current = 'wind'
-  }, [asideRef, enabled])
+  }, [containerRef, enabled, orientation])
 
   useEffect(() => {
     if (!enabled) return
 
-    const aside = asideRef.current
-    if (!aside) return
+    const container = containerRef.current
+    if (!container) return
 
     let frame = 0
 
     const scheduleMeasure = () => {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
-        applyHeightRule(aside)
-        requestAnimationFrame(() => applyHeightRule(aside))
+        applyLayoutRule(container)
+        requestAnimationFrame(() => applyLayoutRule(container))
       })
     }
 
     const observer = new ResizeObserver(scheduleMeasure)
-    observer.observe(aside)
-    const top = aside.querySelector(TOP_SECTION_SELECTOR)
+    observer.observe(container)
+    const top = container.querySelector(TOP_SECTION_SELECTOR)
     if (top) observer.observe(top)
     window.addEventListener('resize', scheduleMeasure)
     scheduleMeasure()
@@ -121,7 +149,7 @@ export function useHarbourSidebarCollapse(
       observer.disconnect()
       window.removeEventListener('resize', scheduleMeasure)
     }
-  }, [asideRef, enabled])
+  }, [containerRef, enabled, orientation])
 
   return {
     scenarioOpen,
