@@ -6,6 +6,7 @@ import { PierCleatScreenSync } from './PierCleatScreenSync'
 import { CollisionHullScreenSync } from './CollisionHullScreenSync'
 import { HarbourEnvironment } from './HarbourEnvironment'
 import { MooringCleatDebugMarker3D } from './MooringCleatDebugMarker3D'
+import { BasinCameraFit } from './BasinCameraFit'
 import { SimulationLoop } from './SimulationLoop'
 
 type HarbourSceneProps = {
@@ -18,7 +19,7 @@ export function HarbourScene({ cleatDebug = false }: HarbourSceneProps) {
       className="!h-full !w-full"
       orthographic
       camera={{
-        zoom: 9,
+        zoom: 1,
         position: [0, 100, 0],
         up: [0, 0, -1],
         near: 0.1,
@@ -29,6 +30,7 @@ export function HarbourScene({ cleatDebug = false }: HarbourSceneProps) {
       <color attach="background" args={['#0b1f33']} />
       <ambientLight intensity={0.85} />
       <directionalLight position={[30, 50, 20]} intensity={0.8} />
+      <BasinCameraFit />
       <SimulationLoop />
       <HarbourEnvironment />
       <BoatMesh />

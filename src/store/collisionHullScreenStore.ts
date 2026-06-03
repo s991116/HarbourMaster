@@ -4,6 +4,7 @@ export type CollisionHullScreenRing = {
   /** Viewport pixels for an SVG `polygon` (hull outline, cleats excluded). */
   points: Array<{ x: number; y: number }>
   visible: boolean
+  strokeWidth: number
 }
 
 type CollisionHullScreenStore = {

@@ -1,19 +1,19 @@
 import type { CSSProperties } from 'react'
-import { CLEAT_MARKER_SIZE_PX } from '../controls/cleatMarkerSize'
 import { useCleatScreenStore } from '../store/cleatScreenStore'
 
 /** Cleat dots above the canvas, below UI panels. */
 export function BoatMooringCleatMarkersOverlay() {
   const markers = useCleatScreenStore((s) => s.markers)
+  const markerDiameterPx = useCleatScreenStore((s) => s.markerDiameterPx)
   const frame = useCleatScreenStore((s) => s.frame)
 
-  const half = CLEAT_MARKER_SIZE_PX / 2
-  const border = 1
+  const half = markerDiameterPx / 2
+  const border = Math.max(1, markerDiameterPx * 0.12)
 
   const dotStyle: CSSProperties = {
     position: 'fixed',
-    width: CLEAT_MARKER_SIZE_PX,
-    height: CLEAT_MARKER_SIZE_PX,
+    width: markerDiameterPx,
+    height: markerDiameterPx,
     marginLeft: -half,
     marginTop: -half,
     borderRadius: '50%',

@@ -3,7 +3,7 @@ import { BoatMooringCleatMarkersOverlay } from './components/BoatMooringCleatMar
 import { PauseOverlay } from './components/PauseOverlay'
 import { PierCleatMarkersOverlay } from './components/PierCleatMarkersOverlay'
 import { CollisionHullScreenOverlay } from './components/CollisionHullScreenOverlay'
-import { HarbourScene } from './components/HarbourScene'
+import { BasinViewport } from './components/BasinViewport'
 import { ControlsPanel } from './components/ControlsPanel'
 import { MobileControlOverlay } from './components/MobileControlOverlay'
 import { MooringCleatDebugOverlay } from './components/MooringCleatDebugOverlay'
@@ -36,22 +36,23 @@ function App() {
 
   const basinClass = landscape
     ? 'relative min-h-0 min-w-0 flex-1'
-    : 'relative h-full w-full'
+    : 'relative h-full w-full min-h-0'
 
   const basin = (
     <div className={basinClass}>
-      <HarbourScene cleatDebug={cleatDebug} />
-      <BoatMooringCleatMarkersOverlay />
-      <PierCleatMarkersOverlay />
-      <CollisionHullScreenOverlay />
-      <PauseOverlay scope={landscape ? 'basin' : 'viewport'} />
-      <MooringCleatDebugOverlay />
+      <BasinViewport cleatDebug={cleatDebug}>
+        <BoatMooringCleatMarkersOverlay />
+        <PierCleatMarkersOverlay />
+        <CollisionHullScreenOverlay />
+        <PauseOverlay scope="basin" />
+        <MooringCleatDebugOverlay />
+      </BasinViewport>
     </div>
   )
 
   if (landscape) {
     return (
-      <div className="flex h-full w-full flex-row">
+      <div className="flex h-dvh max-h-dvh w-full flex-row overflow-hidden">
         <HarbourLandscapeSidebar cleatDebug={cleatDebug} />
         {basin}
       </div>
@@ -59,7 +60,7 @@ function App() {
   }
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-dvh max-h-dvh w-full overflow-hidden">
       {basin}
       <ScenarioSelector cleatDebug={cleatDebug} />
       <WindIndicator />

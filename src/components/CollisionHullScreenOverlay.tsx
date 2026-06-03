@@ -26,7 +26,7 @@ export function CollisionHullScreenOverlay() {
         points={points}
         fill="none"
         stroke="#22d3ee"
-        strokeWidth={2}
+        strokeWidth={hullRing.strokeWidth}
       />
     </svg>
   )

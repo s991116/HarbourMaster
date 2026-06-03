@@ -40,12 +40,12 @@ const iconWrapStyle: CSSProperties = {
 }
 
 type PauseOverlayProps = {
-  /** Cover only the harbour basin (landscape sidebar layout). */
+  /** Cover the scaled basin frame (default) or the full viewport. */
   scope?: 'viewport' | 'basin'
 }
 
 /** Shown after scenario load/reset until the user clicks or presses Enter. */
-export function PauseOverlay({ scope = 'viewport' }: PauseOverlayProps) {
+export function PauseOverlay({ scope = 'basin' }: PauseOverlayProps) {
   const running = useSimulatorStore((s) => s.running)
   const resume = useSimulatorStore((s) => s.resume)
 
