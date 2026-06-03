@@ -14,6 +14,7 @@ type TouchSliderProps = {
   maxLabel?: string
   className?: string
   compact?: boolean
+  showLabel?: boolean
 }
 
 export function TouchSlider({
@@ -30,6 +31,7 @@ export function TouchSlider({
   maxLabel,
   className = '',
   compact = false,
+  showLabel = true,
 }: TouchSliderProps) {
   const {
     trackRef,
@@ -52,12 +54,20 @@ export function TouchSlider({
     : 'absolute inset-x-1 inset-y-3 rounded-full bg-slate-800/80'
 
   const thumbStyle = isVertical
-    ? { bottom: `calc(${ratio * 100}% - 12px)` }
-    : { left: `calc(${ratio * 100}% - 12px)` }
+    ? {
+        bottom: `calc(${ratio * 100}% - 12px)`,
+        left: '50%',
+        transform: 'translateX(-50%)',
+      }
+    : {
+        left: `${ratio * 100}%`,
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+      }
 
   return (
     <div className={`bg-transparent ${className}`}>
-      {!isVertical ? (
+      {!isVertical && showLabel ? (
         <div className="mb-1 flex justify-between text-[10px] text-slate-300">
           <span>{label}</span>
           <span className="tabular-nums text-slate-400">{displayValue}</span>
