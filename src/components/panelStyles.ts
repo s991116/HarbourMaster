@@ -1,7 +1,7 @@
 export type HarbourPanelLayout = 'overlay' | 'sidebar'
 
 /** Scenario panel width (reference size for all harbour UI panels). */
-export const harbourPanelWidthClass = 'w-[min(100%,14rem)] sm:w-56'
+export const harbourPanelWidthClass = 'w-[min(100%,16.94rem)] sm:w-[16.94rem]'
 
 /** Outer harbour UI panels (scenario menu, wind, controls). */
 export const harbourPanelClass =
