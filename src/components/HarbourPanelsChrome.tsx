@@ -2,10 +2,7 @@ import { useRef } from 'react'
 import { ControlsPanel } from './ControlsPanel'
 import { ScenarioSelector } from './ScenarioSelector'
 import { WindIndicator } from './WindIndicator'
-import {
-  harbourPanelWidthClass,
-  harbourSidebarWidthClass,
-} from './panelStyles'
+import { harbourPanelWidthClass } from './panelStyles'
 import {
   useHarbourSidebarCollapse,
   type HarbourPanelsOrientation,
@@ -16,7 +13,8 @@ type HarbourPanelsChromeProps = {
   orientation: HarbourPanelsOrientation
 }
 
-const panelSlotClass = `shrink-0 ${harbourPanelWidthClass}`
+const portraitPanelSlotClass = `shrink-0 ${harbourPanelWidthClass}`
+const landscapePanelSlotClass = 'w-full min-w-0 max-w-full shrink-0'
 const panelGap = 'gap-[clamp(0.25rem,0.7vw,0.5rem)]'
 const panelPadding = 'p-[clamp(0.5rem,1vw,0.75rem)]'
 const panelText = 'text-[length:clamp(0.625rem,1.05vw,0.875rem)]'
@@ -28,6 +26,9 @@ export function HarbourPanelsChrome({
   const containerRef = useRef<HTMLElement>(null)
   const { scenarioOpen, windOpen, onScenarioOpenChange, onWindOpenChange } =
     useHarbourSidebarCollapse(containerRef, true, orientation)
+
+  const panelSlotClass =
+    orientation === 'landscape' ? landscapePanelSlotClass : portraitPanelSlotClass
 
   const scenario = (
     <div className={panelSlotClass} data-sidebar-slot="scenario">
@@ -60,7 +61,7 @@ export function HarbourPanelsChrome({
     return (
       <aside
         ref={containerRef}
-        className={`z-10 flex h-full min-h-0 shrink-0 flex-col overflow-hidden ${panelPadding} ${panelText} ${harbourSidebarWidthClass}`}
+        className={`box-border z-10 flex h-full min-h-0 shrink-0 flex-col overflow-hidden ${panelPadding} ${panelText} ${harbourPanelWidthClass}`}
       >
         <div
           data-sidebar-top

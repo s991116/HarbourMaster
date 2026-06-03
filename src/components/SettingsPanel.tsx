@@ -64,7 +64,7 @@ export function SettingsPanel() {
           Show collision hull
         </label>
 
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2">
           <label className="block text-xs text-slate-300">
             Keel type
             <select
