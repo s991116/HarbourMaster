@@ -39,19 +39,29 @@ const iconWrapStyle: CSSProperties = {
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45)',
 }
 
+type PauseOverlayProps = {
+  /** Cover only the harbour basin (landscape sidebar layout). */
+  scope?: 'viewport' | 'basin'
+}
+
 /** Shown after scenario load/reset until the user clicks or presses Enter. */
-export function PauseOverlay() {
+export function PauseOverlay({ scope = 'viewport' }: PauseOverlayProps) {
   const running = useSimulatorStore((s) => s.running)
   const resume = useSimulatorStore((s) => s.resume)
 
   if (running) return null
+
+  const scopedStyle: CSSProperties =
+    scope === 'basin'
+      ? { ...overlayStyle, position: 'absolute' }
+      : overlayStyle
 
   return (
     <button
       type="button"
       aria-label="Start simulation"
       data-pause-overlay
-      style={overlayStyle}
+      style={scopedStyle}
       onClick={() => resume()}
     >
       <h1 style={titleStyle}>Harbour Manoeuvre Trainer</h1>

@@ -15,6 +15,7 @@ type HarbourSceneProps = {
 export function HarbourScene({ cleatDebug = false }: HarbourSceneProps) {
   return (
     <Canvas
+      className="!h-full !w-full"
       orthographic
       camera={{
         zoom: 9,

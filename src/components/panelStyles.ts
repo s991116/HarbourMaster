@@ -1,3 +1,11 @@
+export type HarbourPanelLayout = 'overlay' | 'sidebar'
+
+/** Scenario panel width (reference size for all harbour UI panels). */
+export const harbourPanelWidthClass = 'w-[min(100%,14rem)] sm:w-56'
+
+/** Left sidebar width in landscape — scales with viewport width (horizontal screen length). */
+export const harbourSidebarWidthClass = 'w-[clamp(11rem,16vw,18rem)]'
+
 /** Outer harbour UI panels (scenario menu, wind, controls). */
 export const harbourPanelClass =
   'rounded-lg border border-sky-400/30 bg-slate-950/10 p-2'

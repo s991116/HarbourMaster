@@ -4,25 +4,39 @@ import {
   MAX_RUDDER_STEP,
   MAX_THROTTLE_STEP,
 } from '../controls/controlSteps'
-import { harbourPanelClass } from './panelStyles'
+import type { HarbourPanelLayout } from './panelStyles'
+import { harbourPanelClass, harbourPanelWidthClass } from './panelStyles'
 import { TouchSlider } from './TouchSlider'
 import { useSimulatorStore } from '../store/simulatorStore'
 
-export function ControlsPanel() {
+type ControlsPanelProps = {
+  layout?: HarbourPanelLayout
+}
+
+export function ControlsPanel({ layout = 'overlay' }: ControlsPanelProps) {
+  const positionClass =
+    layout === 'sidebar'
+      ? `${harbourPanelClass} w-full`
+      : `absolute bottom-3 right-3 z-10 sm:right-10 ${harbourPanelWidthClass} ${harbourPanelClass}`
+  const isSidebar = layout === 'sidebar'
   const throttleStep = useSimulatorStore((s) => s.throttleStep)
   const rudderStep = useSimulatorStore((s) => s.rudderStep)
   const setThrottleStep = useSimulatorStore((s) => s.setThrottleStep)
   const setRudderStep = useSimulatorStore((s) => s.setRudderStep)
 
   return (
-    <div
-      className={`absolute bottom-3 right-3 z-10 w-52 sm:right-10 ${harbourPanelClass}`}
-    >
+    <div className={positionClass} {...(isSidebar ? { 'data-sidebar-panel': true } : {})}>
       <div className="text-[10px] uppercase tracking-[0.15em] text-sky-300/70">
         Controls
       </div>
 
-      <div className="mt-2 space-y-2.5">
+      <div
+        className={
+          isSidebar
+            ? 'mt-1 flex flex-col gap-1.5'
+            : 'mt-2 space-y-2.5'
+        }
+      >
         <TouchSlider
           label="Engine"
           value={throttleStep}
@@ -34,6 +48,7 @@ export function ControlsPanel() {
           minLabel="Astern"
           midLabel="Neutral"
           maxLabel="Forward"
+          compact={isSidebar}
         />
 
         <TouchSlider
@@ -47,6 +62,7 @@ export function ControlsPanel() {
           minLabel="Port"
           midLabel="Amidships"
           maxLabel="Stbd"
+          compact={isSidebar}
         />
       </div>
     </div>

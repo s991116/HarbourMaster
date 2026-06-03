@@ -65,14 +65,14 @@ export function WindDirectionDial({ degrees, onChange }: WindDirectionDialProps)
       aria-valuemax={350}
       aria-valuenow={degrees}
       aria-valuetext={`${degrees} degrees`}
-      className="relative h-11 w-11 shrink-0 touch-none select-none"
+      className="relative h-16 w-16 shrink-0 touch-none select-none"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
       <div
-        className="absolute inset-1 flex items-center justify-center rounded-full border border-sky-400/35 bg-transparent"
+        className="absolute inset-0 flex items-center justify-center rounded-full border border-sky-400/35 bg-transparent"
         style={{ transform: `rotate(${degrees}deg)` }}
         aria-hidden
       >
