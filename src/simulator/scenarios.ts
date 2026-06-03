@@ -156,7 +156,7 @@ export const SCENARIOS: Scenario[] = [
       throttle: 0,
       rudderAngle: 0,
     },
-    wind: { speed: 2, direction: Math.PI * 0.75 },
+    wind: { speed: 0, direction: Math.PI * 0.75 },
     obstacles: createBasinFrame(
       DEFAULT_BOUNDS,
       EMPTY_BASIN_EDGE_THICKNESS,
