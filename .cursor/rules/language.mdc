@@ -1,0 +1,10 @@
+---
+description: All project text — code, specs, comments, docs — is in English
+alwaysApply: true
+---
+
+# Language
+
+- **English only** for source code, identifiers, comments, commit messages, PR text, root `README.md`, `DEPLOY.md`, specs (`docs/specs/`), skills (`.cursor/skills/`), rules, and `AGENTS.md`.
+- User-facing UI copy may be localized later; until then prefer English in the app as well.
+- Do not add Danish (or other) prose in repo files unless explicitly requested for a specific document.

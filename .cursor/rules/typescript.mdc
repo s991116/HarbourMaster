@@ -1,0 +1,14 @@
+---
+description: TypeScript and React conventions for HarbourMaster
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript / React
+
+- Functional components and hooks; simulation state in Zustand stores (`src/store/`), not prop drilling.
+- Reuse types from `src/physics/types.ts` — do not duplicate physics structs.
+- Use relative imports within `src/` like existing files.
+- No `any` without a short comment; prefer `type` for unions.
+- Side effects in `useEffect` with proper cleanup (event listeners).
+- New features: check `docs/specs/` and `AGENTS.md` before large behaviour changes.

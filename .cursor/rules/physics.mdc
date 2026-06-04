@@ -1,0 +1,13 @@
+---
+description: Physics engine and simulator — read spec before changes
+globs: src/physics/**,src/simulator/**
+alwaysApply: false
+---
+
+# Physics
+
+- Read `docs/specs/physics.md` before changing forces, collision, or integration.
+- Keep fixed 60 Hz step in `SimulatorController`; do not change accumulator pattern without a spec update.
+- `BoatConfig` must stay consistent with `boatHullProfile` (collision + cleats).
+- Use `vector2.ts` helpers (`add`, `scale`, `clamp`) — avoid ad-hoc vec2 math.
+- No external physics engines.

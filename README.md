@@ -40,6 +40,13 @@ Virtual slider controls are also available in the UI.
 3. **Departure in crosswind** — wind and prop walk
 4. **Narrow berth** — manoeuvring between boats
 
+## Documentation (spec-driven)
+
+- [AGENTS.md](AGENTS.md) — index for specs, skills, and workflows
+- [docs/specs/](docs/specs/) — behaviour contracts (physics, controls, rendering, cleats, deployment)
+
+Scenarios are still defined in code (`src/simulator/scenarios.ts`); a dedicated scenario spec or builder may come later.
+
 ## Architecture
 
 ```text
