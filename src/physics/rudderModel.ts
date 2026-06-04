@@ -43,11 +43,7 @@ export function computeRudderForces(
 
   const lateralForce = scale(sideways, lateralForceMag)
   const torque =
-    -lateralForceMag *
-    config.length *
-    0.22 *
-    (isReverse ? 0.8 : 1) *
-    Math.sign(state.rudderAngle || 1)
+    -lateralForceMag * config.length * 0.22 * (isReverse ? 0.8 : 1)
 
   return {
     force: lateralForce,
