@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import type { StaticObstacle } from '../physics/types'
 import { getScenario } from '../simulator/scenarios'
 import { useSimulatorStore } from '../store/simulatorStore'
+import { WaterSurface } from './WaterSurface'
 
 function ObstacleMesh({ obstacle }: { obstacle: StaticObstacle }) {
   const color =
@@ -46,10 +47,7 @@ export function HarbourEnvironment() {
 
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[centerX, 0, centerZ]} receiveShadow>
-        <planeGeometry args={[width, depth]} />
-        <meshStandardMaterial color="#1e5f74" />
-      </mesh>
+      <WaterSurface width={width} depth={depth} centerX={centerX} centerZ={centerZ} />
 
       <lineLoop position={[centerX, 0.02, centerZ]}>
         <bufferGeometry>
