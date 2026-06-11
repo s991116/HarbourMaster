@@ -36,7 +36,10 @@ Top-down view of the harbour basin and boat. **One world coordinate system** is 
 
 ## Landscape / layout
 
-- `useLandscapeLayout`: sidebar vs stacked layout on small screens.
+- `useHarbourLayoutMode`: `portrait`, `landscape-sidebar` (wide landscape), or `landscape-compact` (phone landscape, `max-height: 520px`).
+- **Portrait:** header stack (scenario, settings, wind, controls) above basin.
+- **Landscape sidebar:** basin beside a left sidebar; controls at bottom of sidebar.
+- **Landscape compact:** scenario and settings side by side on top; basin full width in the middle; controls bottom-left and wind bottom-right on one row.
 - Basin `flex-1` fills available space; `min-h-0` for correct scroll/flex.
 
 ## Acceptance criteria

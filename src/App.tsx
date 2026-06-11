@@ -8,11 +8,11 @@ import { HarbourPanelsChrome } from './components/HarbourPanelsChrome'
 import { MooringCleatDebugOverlay } from './components/MooringCleatDebugOverlay'
 import { isMooringCleatDebugEnabled } from './debug/mooringCleatDebug'
 import { useKeyboardControls } from './hooks/useKeyboardControls'
-import { useLandscapeLayout } from './hooks/useLandscapeLayout'
+import { useHarbourLayoutMode } from './hooks/useHarbourLayoutMode'
 
 function App() {
   useKeyboardControls()
-  const landscape = useLandscapeLayout()
+  const layoutMode = useHarbourLayoutMode()
   const [cleatDebug, setCleatDebug] = useState(false)
 
   useEffect(() => {
@@ -29,7 +29,7 @@ function App() {
   }, [])
 
   const basin = (
-    <div className="relative min-h-0 min-w-0 flex-1">
+    <div className="relative h-full min-h-0 min-w-0 flex-1">
       <BasinViewport cleatDebug={cleatDebug}>
         <BoatMooringCleatMarkersOverlay />
         <PierCleatMarkersOverlay />
@@ -40,10 +40,18 @@ function App() {
     </div>
   )
 
-  if (landscape) {
+  if (layoutMode === 'landscape-compact') {
+    return (
+      <HarbourPanelsChrome cleatDebug={cleatDebug} mode="landscape-compact">
+        {basin}
+      </HarbourPanelsChrome>
+    )
+  }
+
+  if (layoutMode === 'landscape-sidebar') {
     return (
       <div className="flex h-dvh max-h-dvh w-full flex-row overflow-hidden">
-        <HarbourPanelsChrome cleatDebug={cleatDebug} orientation="landscape" />
+        <HarbourPanelsChrome cleatDebug={cleatDebug} mode="landscape-sidebar" />
         {basin}
       </div>
     )
@@ -51,7 +59,7 @@ function App() {
 
   return (
     <div className="flex h-dvh max-h-dvh w-full flex-col overflow-hidden">
-      <HarbourPanelsChrome cleatDebug={cleatDebug} orientation="portrait" />
+      <HarbourPanelsChrome cleatDebug={cleatDebug} mode="portrait" />
       {basin}
     </div>
   )

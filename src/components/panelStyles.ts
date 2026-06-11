@@ -2,6 +2,8 @@ export type HarbourPanelLayout = 'overlay' | 'sidebar'
 
 export type HarbourPanelsOrientation = 'landscape' | 'portrait'
 
+export type HarbourLayoutMode = 'portrait' | 'landscape-sidebar' | 'landscape-compact'
+
 /** Scenario panel width (reference size for all harbour UI panels). */
 export const harbourPanelWidthClass = 'w-[min(100%,16.94rem)] sm:w-[16.94rem]'
 

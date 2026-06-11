@@ -5,5 +5,5 @@ type HarbourLandscapeSidebarProps = {
 }
 
 export function HarbourLandscapeSidebar({ cleatDebug }: HarbourLandscapeSidebarProps) {
-  return <HarbourPanelsChrome cleatDebug={cleatDebug} orientation="landscape" />
+  return <HarbourPanelsChrome cleatDebug={cleatDebug} mode="landscape-sidebar" />
 }

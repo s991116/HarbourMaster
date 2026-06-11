@@ -53,7 +53,7 @@ Wind in store updates `SimulatorController.setWind` without necessarily resettin
 ## Touch / mobile
 
 - `MobileControlOverlay`, `TouchSlider` — same step semantics as keyboard where possible.
-- `useLandscapeLayout` affects panel layout, not physics.
+- `useHarbourLayoutMode` affects panel layout, not physics.
 
 ## Acceptance criteria
 
