@@ -16,12 +16,13 @@ export function PierCleatScreenSync() {
     if (!metrics) return
 
     const { pierCleats } = getScenario(scenarioId)
+    const { position, heading } = useSimulatorStore.getState().snapshot.boat
     const rect = state.gl.domElement.getBoundingClientRect()
 
     setMarkerDiameterPx(cleatMarkerDiameterPx(metrics.pixelsPerWorldUnit))
 
     const markers = pierCleats.map((cleat) => {
-      const screen = worldToScreenPixels(cleat.position, metrics, rect)
+      const screen = worldToScreenPixels(cleat.position, metrics, rect, position, heading)
       return { id: cleat.id, x: screen.x, y: screen.y }
     })
 

@@ -7,11 +7,63 @@ export const BASIN_VIEW_FIT_MARGIN = 0.92
 /** Cleat marker diameter in world units (scales with basin display). */
 export const CLEAT_MARKER_WORLD_DIAMETER = 1.4
 
+export type BasinViewMode = 'north-up' | 'heading-up'
+
 export type BasinDisplayMetrics = {
   bounds: HarbourBounds
   pixelsPerWorldUnit: number
   canvasWidth: number
   canvasHeight: number
+  /** World point mapped to the canvas centre (basin centre or boat position). */
+  viewCenter: Vector2
+  viewMode: BasinViewMode
+}
+
+export function basinBoundsCenter(bounds: HarbourBounds): Vector2 {
+  return {
+    x: (bounds.minX + bounds.maxX) * 0.5,
+    y: (bounds.minY + bounds.maxY) * 0.5,
+  }
+}
+
+/** View transform for overlay projection; kept in sync with `BasinViewPivot`. */
+export function basinViewTransform(
+  mode: BasinViewMode,
+  bounds: HarbourBounds,
+  boatPosition: Vector2,
+): Pick<BasinDisplayMetrics, 'viewCenter' | 'viewMode'> {
+  if (mode === 'north-up') {
+    return { viewCenter: basinBoundsCenter(bounds), viewMode: 'north-up' }
+  }
+
+  return { viewCenter: boatPosition, viewMode: 'heading-up' }
+}
+
+/** Same Y-axis rotation as `BasinViewPivot` (Three.js convention on the ground plane). */
+export function applyHeadingUpWorldOffset(
+  world: Vector2,
+  boatPosition: Vector2,
+  boatHeading: number,
+): Vector2 {
+  const dx = world.x - boatPosition.x
+  const dy = world.y - boatPosition.y
+  const cos = Math.cos(Math.PI - boatHeading)
+  const sin = Math.sin(Math.PI - boatHeading)
+  return {
+    x: boatPosition.x + dx * cos + dy * sin,
+    y: boatPosition.y + (-dx * sin + dy * cos),
+  }
+}
+
+/** Map a world point into view space before screen projection. */
+export function worldToViewPlane(
+  world: Vector2,
+  metrics: BasinDisplayMetrics,
+  boatPosition: Vector2,
+  boatHeading: number,
+): Vector2 {
+  if (metrics.viewMode === 'north-up') return world
+  return applyHeadingUpWorldOffset(world, boatPosition, boatHeading)
 }
 
 export function basinViewAspectRatio(bounds: HarbourBounds): number {
@@ -56,6 +108,8 @@ export function buildBasinDisplayMetrics(
   canvasWidth: number,
   canvasHeight: number,
   bounds: HarbourBounds,
+  viewCenter: Vector2,
+  viewMode: BasinViewMode,
   margin = BASIN_VIEW_FIT_MARGIN,
 ): BasinDisplayMetrics {
   return {
@@ -63,6 +117,8 @@ export function buildBasinDisplayMetrics(
     canvasWidth,
     canvasHeight,
     pixelsPerWorldUnit: pixelsPerWorldUnitForFit(canvasWidth, canvasHeight, bounds, margin),
+    viewCenter,
+    viewMode,
   }
 }
 
@@ -71,13 +127,16 @@ export function worldToScreenPixels(
   world: Vector2,
   metrics: BasinDisplayMetrics,
   canvasRect: DOMRect,
+  boatPosition: Vector2 = metrics.viewCenter,
+  boatHeading = 0,
 ): { x: number; y: number } {
-  const centerX = (metrics.bounds.minX + metrics.bounds.maxX) * 0.5
-  const centerY = (metrics.bounds.minY + metrics.bounds.maxY) * 0.5
+  const view = worldToViewPlane(world, metrics, boatPosition, boatHeading)
+  const dx = view.x - metrics.viewCenter.x
+  const dy = view.y - metrics.viewCenter.y
   const px = metrics.pixelsPerWorldUnit
   return {
-    x: canvasRect.left + canvasRect.width * 0.5 + (world.x - centerX) * px,
-    y: canvasRect.top + canvasRect.height * 0.5 + (world.y - centerY) * px,
+    x: canvasRect.left + canvasRect.width * 0.5 + dx * px,
+    y: canvasRect.top + canvasRect.height * 0.5 + dy * px,
   }
 }
 

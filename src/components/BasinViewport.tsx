@@ -7,6 +7,7 @@ import {
 } from '../harbour/basinDisplay'
 import { getScenario } from '../simulator/scenarios'
 import { useSimulatorStore } from '../store/simulatorStore'
+import { BasinViewModeToggle } from './BasinViewModeToggle'
 import { HarbourScene } from './HarbourScene'
 
 type BasinViewportProps = {
@@ -62,6 +63,11 @@ export function BasinViewport({ cleatDebug = false, children }: BasinViewportPro
         }}
       >
         <HarbourScene cleatDebug={cleatDebug} />
+        <div className="pointer-events-none absolute right-2 top-2 z-10">
+          <div className="pointer-events-auto">
+            <BasinViewModeToggle />
+          </div>
+        </div>
         {children}
       </div>
     </div>

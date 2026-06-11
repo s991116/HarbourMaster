@@ -44,7 +44,7 @@ Store holds `throttleStep`, `rudderStep`, and derived `input: PhysicsInput`.
 
 ## Wind (UI)
 
-- Direction: snap to 10° (`WIND_DIRECTION_STEP`).
+- Direction: snap to 15° (`WIND_DIRECTION_STEP`).
 - Speed: 0–40 kn (`MAX_WIND_SPEED_KNOTS`), integer knob.
 - kn ↔ m/s via `KNOTS_TO_MS` / `windSpeedKnotsToMs`.
 
@@ -59,7 +59,7 @@ Wind in store updates `SimulatorController.setWind` without necessarily resettin
 
 - [ ] Arrow keys only change steps within max; UI shows consistent labels (`formatThrottleStep` / `formatRudderStep`).
 - [ ] Space sets both steps to 0 and neutral `PhysicsInput`.
-- [ ] R resets boat to scenario initial state + wind from scenario (not controls only).
+- [ ] R resets boat position and wind to scenario defaults; throttle/rudder steps reset to neutral. Settings-panel values (boat config, water ripples, collision hull overlay) are unchanged.
 - [ ] Paused: no position change on arrow keys (resume only with Enter).
 - [ ] Scenario selector stops sim and resets controls.
 

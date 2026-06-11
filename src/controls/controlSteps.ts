@@ -26,7 +26,7 @@ export function formatRudderStep(step: number): string {
   return `Port ${Math.abs(step)}`
 }
 
-export const WIND_DIRECTION_STEP = 10
+export const WIND_DIRECTION_STEP = 15
 
 export function snapWindDirectionDegrees(degrees: number): number {
   const normalized = ((degrees % 360) + 360) % 360

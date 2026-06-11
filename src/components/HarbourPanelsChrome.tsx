@@ -1,12 +1,8 @@
-import { useRef } from 'react'
 import { ControlsPanel } from './ControlsPanel'
 import { ScenarioSelector } from './ScenarioSelector'
+import { SettingsButton } from './SettingsButton'
 import { WindIndicator } from './WindIndicator'
-import { harbourPanelWidthClass } from './panelStyles'
-import {
-  useHarbourSidebarCollapse,
-  type HarbourPanelsOrientation,
-} from '../hooks/useHarbourSidebarCollapse'
+import { harbourPanelWidthClass, type HarbourPanelsOrientation } from './panelStyles'
 
 type HarbourPanelsChromeProps = {
   cleatDebug: boolean
@@ -23,32 +19,21 @@ export function HarbourPanelsChrome({
   cleatDebug,
   orientation,
 }: HarbourPanelsChromeProps) {
-  const containerRef = useRef<HTMLElement>(null)
-  const { scenarioOpen, windOpen, onScenarioOpenChange, onWindOpenChange } =
-    useHarbourSidebarCollapse(containerRef, true, orientation)
-
   const panelSlotClass =
     orientation === 'landscape' ? landscapePanelSlotClass : portraitPanelSlotClass
 
-  const scenario = (
-    <div className={panelSlotClass} data-sidebar-slot="scenario">
-      <ScenarioSelector
-        cleatDebug={cleatDebug}
-        layout="sidebar"
-        open={scenarioOpen}
-        onOpenChange={onScenarioOpenChange}
-      />
-    </div>
-  )
-
-  const wind = (
-    <div className={panelSlotClass} data-sidebar-slot="wind">
-      <WindIndicator
-        layout="sidebar"
-        open={windOpen}
-        onOpenChange={onWindOpenChange}
-      />
-    </div>
+  const menuButtons = (
+    <>
+      <div className={panelSlotClass} data-sidebar-slot="scenario">
+        <ScenarioSelector cleatDebug={cleatDebug} />
+      </div>
+      <div className={panelSlotClass} data-sidebar-slot="settings">
+        <SettingsButton />
+      </div>
+      <div className={panelSlotClass} data-sidebar-slot="wind">
+        <WindIndicator />
+      </div>
+    </>
   )
 
   const controls = (
@@ -60,15 +45,13 @@ export function HarbourPanelsChrome({
   if (orientation === 'landscape') {
     return (
       <aside
-        ref={containerRef}
         className={`box-border z-10 flex h-full min-h-0 shrink-0 flex-col overflow-hidden ${panelPadding} ${panelText} ${harbourPanelWidthClass}`}
       >
         <div
           data-sidebar-top
           className={`flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none] ${panelGap}`}
         >
-          {scenario}
-          {wind}
+          {menuButtons}
         </div>
         <div className={`w-full shrink-0 pt-[clamp(0.25rem,0.7vw,0.5rem)]`}>{controls}</div>
       </aside>
@@ -77,15 +60,10 @@ export function HarbourPanelsChrome({
 
   return (
     <header
-      ref={containerRef}
       className={`z-10 flex shrink-0 flex-row items-start overflow-x-auto bg-[#0b1f33] ${panelPadding} ${panelText} ${panelGap}`}
     >
-      <div
-        data-sidebar-top
-        className={`flex min-w-0 flex-1 flex-col ${panelGap}`}
-      >
-        {scenario}
-        {wind}
+      <div data-sidebar-top className={`flex min-w-0 flex-1 flex-col ${panelGap}`}>
+        {menuButtons}
       </div>
       {controls}
     </header>

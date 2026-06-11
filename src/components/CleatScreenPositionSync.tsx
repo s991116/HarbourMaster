@@ -3,7 +3,10 @@ import {
   getBoatMooringCleats,
   mooringCleatWorldPosition,
 } from '../physics/boatMooringCleats'
-import { cleatMarkerDiameterPx, worldToScreenPixels } from '../harbour/basinDisplay'
+import {
+  cleatMarkerDiameterPx,
+  worldToScreenPixels,
+} from '../harbour/basinDisplay'
 import { useBasinDisplayStore } from '../store/basinDisplayStore'
 import { useCleatScreenStore } from '../store/cleatScreenStore'
 import { useSimulatorStore } from '../store/simulatorStore'
@@ -26,7 +29,7 @@ export function CleatScreenPositionSync() {
 
     const markers = cleatList.map((cleat) => {
       const world = mooringCleatWorldPosition(cleat, position, heading)
-      const screen = worldToScreenPixels(world, metrics, rect)
+      const screen = worldToScreenPixels(world, metrics, rect, position, heading)
       return {
         id: cleat.id,
         x: screen.x,

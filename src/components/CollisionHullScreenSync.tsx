@@ -32,7 +32,7 @@ export function CollisionHullScreenSync() {
 
     const points = getBoatHullLocalVertices(boatConfig).map((local) => {
       const world = boatLocalToWorldForDisplay(local, position, heading)
-      return worldToScreenPixels(world, metrics, rect)
+      return worldToScreenPixels(world, metrics, rect, position, heading)
     })
 
     setHullRing({

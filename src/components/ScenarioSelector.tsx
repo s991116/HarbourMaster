@@ -1,43 +1,23 @@
-import { useState } from 'react'
 import { SCENARIOS, useSimulatorStore } from '../store/simulatorStore'
 import type { ScenarioId } from '../simulator/scenarios'
-import {
-  harbourActionButtonClass,
-  harbourPanelWidthClass,
-  harbourSelectClass,
-} from './panelStyles'
-import type { HarbourPanelLayout } from './panelStyles'
-import { HarbourCollapsiblePanel } from './HarbourCollapsiblePanel'
-import { SettingsPanel } from './SettingsPanel'
+import { HarbourPopupButton } from './HarbourPopupButton'
+import { harbourActionButtonClass, harbourSelectClass } from './panelStyles'
 
 type ScenarioSelectorProps = {
   cleatDebug?: boolean
-  layout?: HarbourPanelLayout
-  /** Sidebar: controlled open state (auto-collapses when panels overlap). */
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+  className?: string
 }
 
-export function ScenarioSelector({
-  cleatDebug = false,
-  layout = 'overlay',
-  open: controlledOpen,
-  onOpenChange,
-}: ScenarioSelectorProps) {
-  const [overlayOpen, setOverlayOpen] = useState(true)
-  const open = controlledOpen ?? overlayOpen
-  const setOpen = onOpenChange ?? setOverlayOpen
-
+function ScenarioWindowContent({ cleatDebug = false }: { cleatDebug?: boolean }) {
   const scenarioId = useSimulatorStore((s) => s.scenarioId)
   const setScenario = useSimulatorStore((s) => s.setScenario)
   const resetScenario = useSimulatorStore((s) => s.resetScenario)
 
-  const body = (
-    <>
+  return (
+    <div className="space-y-3">
       {cleatDebug ? (
         <div
           style={{
-            marginBottom: 12,
             padding: '8px 10px',
             borderRadius: 8,
             backgroundColor: '#dc2626',
@@ -50,11 +30,13 @@ export function ScenarioSelector({
           Cleat debug aktiv (React panel)
         </div>
       ) : null}
-      <label className="block">
+
+      <label className="block text-xs text-slate-300">
+        Scenario
         <select
           value={scenarioId}
-          onChange={(e) => setScenario(e.target.value as ScenarioId)}
-          className={harbourSelectClass}
+          onChange={(event) => setScenario(event.target.value as ScenarioId)}
+          className={`mt-1 ${harbourSelectClass}`}
         >
           {SCENARIOS.map((scenario) => (
             <option key={scenario.id} value={scenario.id}>
@@ -64,31 +46,22 @@ export function ScenarioSelector({
         </select>
       </label>
 
-      <SettingsPanel />
-
-      <button type="button" onClick={resetScenario} className={`mt-2 ${harbourActionButtonClass}`}>
+      <button type="button" onClick={resetScenario} className={harbourActionButtonClass}>
         Reset (R)
       </button>
-    </>
+    </div>
   )
+}
 
-  const panel = (
-    <HarbourCollapsiblePanel
-      title="Scenario"
-      open={open}
-      onOpenChange={setOpen}
-      layout={layout}
-      sidebarPanel={layout === 'sidebar'}
-    >
-      {body}
-    </HarbourCollapsiblePanel>
-  )
-
-  if (layout === 'sidebar') {
-    return panel
-  }
-
+export function ScenarioSelector({ cleatDebug = false, className = '' }: ScenarioSelectorProps) {
   return (
-    <div className={`absolute left-3 top-3 z-10 ${harbourPanelWidthClass}`}>{panel}</div>
+    <HarbourPopupButton
+      label="Scenario"
+      windowTitle="Scenario"
+      titleId="scenario-window-title"
+      className={className}
+    >
+      <ScenarioWindowContent cleatDebug={cleatDebug} />
+    </HarbourPopupButton>
   )
 }

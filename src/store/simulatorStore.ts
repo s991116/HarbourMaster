@@ -154,16 +154,14 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   },
 
   resetScenario: () => {
-    const { scenarioId } = get()
-    const scenario = getScenario(scenarioId)
+    const { scenarioId, boatConfig } = get()
     controller.resetScenario(scenarioId)
-    controller.setBoatConfig(scenario.boatConfig)
+    controller.setBoatConfig(boatConfig)
     controller.stop()
     set({
       throttleStep: 0,
       rudderStep: 0,
       input: stepsToInput(0, 0),
-      boatConfig: { ...scenario.boatConfig },
       snapshot: controller.getSnapshot(),
       running: false,
     })

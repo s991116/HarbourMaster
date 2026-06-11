@@ -1,32 +1,21 @@
-import { useState } from 'react'
 import {
   MAX_WIND_SPEED_KNOTS,
   windDirectionRadiansToDegrees,
   windSpeedMsToKnots,
 } from '../controls/controlSteps'
+import { useSimulatorStore } from '../store/simulatorStore'
 import type { HarbourPanelLayout } from './panelStyles'
-import { harbourPanelWidthClass } from './panelStyles'
-import { HarbourCollapsiblePanel } from './HarbourCollapsiblePanel'
+import { harbourPanelClass } from './panelStyles'
 import { TouchSlider } from './TouchSlider'
 import { WindDirectionDial } from './WindDirectionDial'
-import { useSimulatorStore } from '../store/simulatorStore'
 
 type WindIndicatorProps = {
   layout?: HarbourPanelLayout
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+  className?: string
 }
 
-export function WindIndicator({
-  layout = 'overlay',
-  open: controlledOpen,
-  onOpenChange,
-}: WindIndicatorProps) {
-  const [overlayOpen, setOverlayOpen] = useState(true)
-  const open = controlledOpen ?? overlayOpen
-  const setOpen = onOpenChange ?? setOverlayOpen
+export function WindIndicator({ layout = 'sidebar', className = '' }: WindIndicatorProps) {
   const isSidebar = layout === 'sidebar'
-
   const wind = useSimulatorStore((s) => s.snapshot.wind)
   const setWindSpeedKnots = useSimulatorStore((s) => s.setWindSpeedKnots)
   const setWindDirectionDegrees = useSimulatorStore((s) => s.setWindDirectionDegrees)
@@ -34,70 +23,41 @@ export function WindIndicator({
   const speedKnots = windSpeedMsToKnots(wind.speed)
   const directionDegrees = windDirectionRadiansToDegrees(wind.direction)
 
-  const body = (
-    <div
-      className={
-        isSidebar
-          ? 'flex flex-col items-center gap-1'
-          : 'mt-0.5 flex items-end gap-6'
-      }
-    >
-      <div className="flex shrink-0 flex-col items-center gap-0.5">
-        <div className="text-sm font-semibold tabular-nums text-white">
-          {directionDegrees}°
-        </div>
-        <WindDirectionDial
-          degrees={directionDegrees}
-          onChange={setWindDirectionDegrees}
-        />
-      </div>
-
-      <div
-        className={
-          isSidebar
-            ? 'flex w-full flex-col gap-0.5'
-            : 'flex min-w-0 flex-1 flex-col gap-0.5'
-        }
-      >
-        <div className="text-sm font-semibold tabular-nums text-white">
-          {speedKnots} kt
-        </div>
-        <TouchSlider
-          label="Wind speed"
-          showLabel={false}
-          value={speedKnots}
-          min={0}
-          max={MAX_WIND_SPEED_KNOTS}
-          step={1}
-          onChange={setWindSpeedKnots}
-          formatValue={(value) => `${value} kt`}
-          compact={isSidebar}
-        />
-      </div>
-    </div>
-  )
-
-  const panel = (
-    <HarbourCollapsiblePanel
-      title="Wind"
-      open={open}
-      onOpenChange={setOpen}
-      layout={layout}
-      sidebarPanel={isSidebar}
-    >
-      {body}
-    </HarbourCollapsiblePanel>
-  )
-
-  if (isSidebar) {
-    return panel
-  }
-
   return (
     <div
-      className={`absolute right-3 top-3 z-10 sm:right-10 ${harbourPanelWidthClass}`}
+      className={`${harbourPanelClass} w-full ${className}`.trim()}
+      {...(isSidebar ? { 'data-sidebar-panel': true } : {})}
     >
-      {panel}
+      <div className="text-[10px] uppercase tracking-[0.15em] text-sky-300/70">Wind</div>
+
+      <div className="mt-1 flex flex-col items-center gap-2">
+        <div className="flex shrink-0 flex-col items-center gap-1">
+          <div className="text-sm font-semibold tabular-nums text-white">
+            {directionDegrees}°
+          </div>
+          <WindDirectionDial
+            degrees={directionDegrees}
+            onChange={setWindDirectionDegrees}
+          />
+        </div>
+
+        <div className="flex w-full flex-col gap-1">
+          <div className="text-center text-sm font-semibold tabular-nums text-white">
+            {speedKnots} kt
+          </div>
+          <TouchSlider
+            label="Wind speed"
+            showLabel={false}
+            value={speedKnots}
+            min={0}
+            max={MAX_WIND_SPEED_KNOTS}
+            step={1}
+            onChange={setWindSpeedKnots}
+            formatValue={(value) => `${value} kt`}
+            compact={isSidebar}
+          />
+        </div>
+      </div>
     </div>
   )
 }

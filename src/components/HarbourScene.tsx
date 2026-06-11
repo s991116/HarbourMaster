@@ -7,6 +7,7 @@ import { CollisionHullScreenSync } from './CollisionHullScreenSync'
 import { HarbourEnvironment } from './HarbourEnvironment'
 import { MooringCleatDebugMarker3D } from './MooringCleatDebugMarker3D'
 import { BasinCameraFit } from './BasinCameraFit'
+import { BasinViewPivot } from './BasinViewPivot'
 import { SimulationLoop } from './SimulationLoop'
 
 type HarbourSceneProps = {
@@ -32,13 +33,15 @@ export function HarbourScene({ cleatDebug = false }: HarbourSceneProps) {
       <directionalLight position={[30, 50, 20]} intensity={0.8} />
       <BasinCameraFit />
       <SimulationLoop />
-      <HarbourEnvironment />
-      <BoatMesh />
-      <BoatCollisionHullOutline />
+      <BasinViewPivot>
+        <HarbourEnvironment />
+        <BoatMesh />
+        <BoatCollisionHullOutline />
+        {cleatDebug ? <MooringCleatDebugMarker3D /> : null}
+      </BasinViewPivot>
       <CleatScreenPositionSync />
       <PierCleatScreenSync />
       <CollisionHullScreenSync />
-      {cleatDebug ? <MooringCleatDebugMarker3D /> : null}
     </Canvas>
   )
 }

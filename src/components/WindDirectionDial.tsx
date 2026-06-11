@@ -62,7 +62,7 @@ export function WindDirectionDial({ degrees, onChange }: WindDirectionDialProps)
       role="slider"
       aria-label="Wind direction"
       aria-valuemin={0}
-      aria-valuemax={350}
+      aria-valuemax={345}
       aria-valuenow={degrees}
       aria-valuetext={`${degrees} degrees`}
       className="relative h-16 w-16 shrink-0 touch-none select-none"
