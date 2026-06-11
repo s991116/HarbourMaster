@@ -67,8 +67,8 @@ export function HarbourPanelsChrome({
           className={`z-10 flex shrink-0 items-end justify-between ${panelPadding} ${panelGap} bg-[#0b1f33]`}
           data-harbour-chrome="compact-bottom"
         >
-          <div className={`shrink-0 ${harbourPanelWidthClass}`}>{controlsPanel}</div>
           <div className={`shrink-0 ${harbourPanelWidthClass}`}>{windPanel}</div>
+          <div className={`shrink-0 ${harbourPanelWidthClass}`}>{controlsPanel}</div>
         </footer>
       </div>
     )

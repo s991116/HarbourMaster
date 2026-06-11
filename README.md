@@ -31,7 +31,7 @@ Open [http://localhost:5173](http://localhost:5173).
 | Space | Neutral |
 | R | Reset scenario |
 
-Virtual slider controls are also available in the UI.
+Virtual slider controls are also available in the UI. Wind direction and speed are set in the **Wind** panel (direction snaps to 15° steps). **Scenario** and **Settings** open popup dialogs; Settings exposes boat physics and water-ripple tuning. Toggle **north-up** / **heading-up** view with the icon at the top-right of the basin.
 
 ## Scenarios (MVP)
 

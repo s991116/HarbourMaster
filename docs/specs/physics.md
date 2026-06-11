@@ -57,7 +57,9 @@ Changes to hull shape or penetration must preserve “no tunneling through quay�
 ## Boat configuration
 
 - Presets: `boatPresets.ts` (`FIN_KEEL_BOAT`, `LONG_KEEL_BOAT`).
-- Scenario selects preset; `simulatorStore` can update `boatConfig` via settings (must stay consistent with hull profile).
+- Scenario selects preset on **scenario change**; `simulatorStore` can update `boatConfig` at runtime via the Settings popup (must stay consistent with hull profile).
+- **Scenario reset (R)** restores position and scenario wind but keeps the current `boatConfig` and other Settings values.
+- Default directional drag (both presets): `dragAhead` 175, `dragAstern` 400, `dragSideways` 1000 — see `waterResistanceModel.ts`.
 
 ## Acceptance criteria
 
@@ -71,5 +73,5 @@ Changes to hull shape or penetration must preserve “no tunneling through quay�
 ## Out of scope (for now)
 
 - Mooring line tension / moored boat.
-- Waves, current, depth.
+- Physics waves, current, depth (procedural **water ripples** in the renderer are visual only — see [rendering.md](rendering.md)).
 - Scenario-specific layout (see future builder).

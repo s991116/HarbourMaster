@@ -16,7 +16,7 @@ description: >-
 
 1. **World data** from physics or scenario (`boatMooringCleats`, `getBoatHullWorldVertices`, `pierCleats`).
 2. **R3F sync** component (optional) for 3D debug markers.
-3. **Screen store** + `*ScreenSync` component projecting world → pixels via `basinDisplayStore` metrics.
+3. **Screen store** + `*ScreenSync` component projecting world → pixels via `basinDisplayStore` metrics (include boat heading when calling `worldToScreenPixels` so heading-up view stays aligned).
 4. **Overlay** React component positioned absolute over `BasinViewport`.
 
 Existing examples:

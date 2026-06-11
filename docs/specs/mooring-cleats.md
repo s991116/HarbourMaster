@@ -26,10 +26,10 @@ Show **boat cleats** (6) and **pier cleats** per scenario for training and futur
 |-----------|--------|
 | `BoatMooringCleatMarkersOverlay` | Boat cleats on screen |
 | `PierCleatMarkersOverlay` | Pier cleats from active scenario |
-| `CollisionHullScreenOverlay` | Optional hull outline (`showCollisionHull` in store) |
+| `CollisionHullScreenOverlay` | Optional hull outline (`showCollisionHull` in store; toggled in Settings popup) |
 | `MooringCleatDebugOverlay` | Only when debug flag is active |
 
-Screen positions sync via `*ScreenSync` components and dedicated Zustand stores (`cleatScreenStore`, `collisionHullScreenStore`, `pierCleatScreenStore`).
+Screen positions sync via `*ScreenSync` components and dedicated Zustand stores (`cleatScreenStore`, `collisionHullScreenStore`, `pierCleatScreenStore`). Projection uses `basinDisplayStore` metrics including `viewMode` so overlays stay aligned in north-up and heading-up view — see [rendering.md](rendering.md).
 
 ## Debug mode
 
@@ -47,7 +47,7 @@ Enabled via `isMooringCleatDebugEnabled()` (`src/debug/mooringCleatDebug.ts`):
 
 - [ ] 6 boat cleats follow boat rotation and config changes (length/beam).
 - [ ] Pier cleats shown only for positions defined in the active scenario.
-- [ ] Collision hull overlay matches `getBoatHullWorldVertices` when enabled.
+- [ ] Collision hull overlay matches `getBoatHullWorldVertices` when enabled, in both view modes.
 - [ ] Debug can be toggled without affecting physics (`running` unchanged).
 
 ## Future
