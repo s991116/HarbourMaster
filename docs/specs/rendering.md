@@ -61,7 +61,7 @@ Visual only — no effect on physics (see [physics.md](physics.md) out of scope)
 - `useHarbourLayoutMode`: `portrait`, `landscape-sidebar` (wide landscape), or `landscape-compact` (small phone: landscape with `max-height: 520px`, or portrait with `max-width: 520px`).
 - **Portrait (tablet / wide):** header stack (scenario, settings, wind, controls) above basin.
 - **Landscape sidebar:** basin beside a left sidebar; controls at bottom of sidebar.
-- **Compact:** scenario and settings side by side on top; basin full width in the middle with no side chrome; wind bottom-left and controls bottom-right on one row (`items-end`).
+- **Compact:** scenario and settings side by side on top; basin full width in the middle with no side chrome; wind bottom-left (~40% width) and controls bottom-right (~60% width) on one row (`items-end`, `min-w-0`, no fixed panel width).
 - Basin `flex-1` fills available space; `min-h-0` for correct scroll/flex.
 
 ## Acceptance criteria

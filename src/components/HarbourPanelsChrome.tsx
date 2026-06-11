@@ -64,11 +64,15 @@ export function HarbourPanelsChrome({
         <div className="relative min-h-0 min-w-0 flex-1">{children}</div>
 
         <footer
-          className={`z-10 flex shrink-0 items-end justify-between ${panelPadding} ${panelGap} bg-[#0b1f33]`}
+          className={`z-10 box-border flex w-full min-w-0 shrink-0 items-end ${panelPadding} ${panelGap} bg-[#0b1f33]`}
           data-harbour-chrome="compact-bottom"
         >
-          <div className={`shrink-0 ${harbourPanelWidthClass}`}>{windPanel}</div>
-          <div className={`shrink-0 ${harbourPanelWidthClass}`}>{controlsPanel}</div>
+          <div className="min-w-0 flex-[2]" data-sidebar-slot="wind">
+            <WindIndicator />
+          </div>
+          <div className="min-w-0 flex-[3]" data-sidebar-slot="controls">
+            <ControlsPanel layout="sidebar" />
+          </div>
         </footer>
       </div>
     )
