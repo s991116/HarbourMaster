@@ -15,6 +15,8 @@ type TouchSliderProps = {
   className?: string
   compact?: boolean
   showLabel?: boolean
+  showValue?: boolean
+  labelAlign?: 'split' | 'center'
 }
 
 export function TouchSlider({
@@ -32,6 +34,8 @@ export function TouchSlider({
   className = '',
   compact = false,
   showLabel = true,
+  showValue = true,
+  labelAlign = 'split',
 }: TouchSliderProps) {
   const {
     trackRef,
@@ -46,8 +50,8 @@ export function TouchSlider({
   const isVertical = orientation === 'vertical'
 
   const trackClass = isVertical
-    ? `relative w-11 min-w-11 flex-1 touch-none select-none ${compact ? 'min-h-24' : 'min-h-32'}`
-    : `relative h-11 w-full touch-none select-none ${compact ? '' : ''}`
+    ? `relative w-11 min-w-11 min-h-0 flex-1 touch-none select-none ${compact ? '' : 'min-h-32'}`
+    : 'relative h-11 w-full touch-none select-none'
 
   const railClass = isVertical
     ? 'absolute inset-x-3 inset-y-1 rounded-full bg-slate-800/80'
@@ -66,12 +70,20 @@ export function TouchSlider({
       }
 
   return (
-    <div className={`bg-transparent ${className}`}>
+    <div
+      className={`bg-transparent ${isVertical ? 'flex min-h-0 flex-col' : ''} ${className}`.trim()}
+    >
       {!isVertical && showLabel ? (
-        <div className="mb-1 flex justify-between text-[10px] text-slate-300">
-          <span>{label}</span>
-          <span className="tabular-nums text-slate-400">{displayValue}</span>
-        </div>
+        labelAlign === 'center' ? (
+          <div className="mb-1 text-center text-[10px] text-slate-300">{label}</div>
+        ) : (
+          <div className="mb-1 flex justify-between text-[10px] text-slate-300">
+            <span>{label}</span>
+            {showValue ? (
+              <span className="tabular-nums text-slate-400">{displayValue}</span>
+            ) : null}
+          </div>
+        )
       ) : null}
 
       <div
@@ -99,16 +111,18 @@ export function TouchSlider({
       {!isVertical && (minLabel || midLabel || maxLabel) ? (
         <div className="mt-1 flex justify-between text-[9px] text-slate-500">
           <span>{minLabel}</span>
-          <span>{midLabel}</span>
+          {midLabel ? <span>{midLabel}</span> : <span aria-hidden />}
           <span>{maxLabel}</span>
         </div>
       ) : null}
 
-      {isVertical ? (
+      {isVertical && (showValue || (minLabel && maxLabel)) ? (
         <div className="mt-1 text-center text-[9px] leading-tight text-slate-400">
-          <div>{displayValue}</div>
+          {showValue ? <div>{displayValue}</div> : null}
           {minLabel && maxLabel ? (
-            <div className="mt-1 flex flex-col gap-6 text-slate-500">
+            <div
+              className={`mt-1 flex flex-col text-slate-500 ${compact ? 'gap-2' : 'gap-6'}`}
+            >
               <span>{maxLabel}</span>
               <span>{minLabel}</span>
             </div>

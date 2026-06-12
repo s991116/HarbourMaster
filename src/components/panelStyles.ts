@@ -1,5 +1,15 @@
 export type HarbourPanelLayout = 'overlay' | 'sidebar'
 
+/** Controls placement within harbour chrome. */
+export type ControlsChrome =
+  | 'desktop-sidebar'
+  | 'portrait-engine'
+  | 'portrait-rudder'
+  | 'overlay'
+
+/** Wind panel density within harbour chrome. */
+export type WindChrome = 'sidebar' | 'portrait-strip'
+
 export type HarbourPanelsOrientation = 'landscape' | 'portrait'
 
 export type HarbourLayoutMode = 'landscape-sidebar' | 'landscape-compact'

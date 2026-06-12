@@ -60,7 +60,8 @@ Visual only — no effect on physics (see [physics.md](physics.md) out of scope)
 
 - `useHarbourLayoutMode`: two modes chosen by `orientation` only — no intermediate width/height breakpoints.
 - **Landscape (`landscape-sidebar`):** basin beside a left sidebar (scenario, settings, wind stacked; controls at bottom of sidebar).
-- **Portrait (`landscape-compact`):** scenario and settings side by side on top; basin full width in the middle; wind bottom-left (~40% width) and controls bottom-right (~60% width) on one row (`items-end`, `min-w-0`, no fixed panel width).
+- **Portrait (`landscape-compact`):** scenario and settings side by side on top; basin full width in the middle; footer row with equal height: vertical engine (¼), wind (¼), horizontal rudder (½) — `flex-[1]` / `flex-[1]` / `flex-[2]`, `items-stretch`.
+- **Desktop controls panel:** horizontal rudder (left) and vertical engine (right) in the sidebar footer; wind remains in the sidebar scroll area above.
 - Basin `flex-1` fills available space; `min-h-0` for correct scroll/flex.
 
 ## Acceptance criteria

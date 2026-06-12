@@ -59,8 +59,8 @@ Layout mode from `useHarbourLayoutMode` — see [rendering.md](rendering.md).
 |----|------|---------|
 | **Scenario** | Popup (`HarbourPopupButton`) | Scenario select, reset (R) |
 | **Settings** | Popup | Max rudder angle (degrees), `BoatConfig` fields, collision-hull toggle, water-ripple shader parameters (`waterRippleSettingsStore`) |
-| **Wind** | Open panel (same frame as Controls) | Direction dial (15° steps), speed slider |
-| **Controls** | Open panel | Engine and rudder sliders |
+| **Wind** | Open panel | Direction dial (15° steps), speed slider; portrait footer strip (¼ width) |
+| **Controls** | Open panel | Vertical engine slider; horizontal rudder slider — desktop: rudder left + engine right in one panel; portrait: engine (¼) and rudder (½) in footer row |
 
 Popup dialogs share `HarbourPopupWindow` (backdrop, title bar, Escape to close).
 

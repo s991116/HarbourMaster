@@ -47,7 +47,7 @@ export function HarbourPanelsChrome({
 
   const controlsPanel = (
     <div className={panelSlotClass} data-sidebar-slot="controls">
-      <ControlsPanel layout="sidebar" />
+      <ControlsPanel chrome="desktop-sidebar" />
     </div>
   )
 
@@ -64,14 +64,17 @@ export function HarbourPanelsChrome({
         <div className="relative min-h-0 min-w-0 flex-1">{children}</div>
 
         <footer
-          className={`z-10 box-border flex w-full min-w-0 shrink-0 items-end ${panelPadding} ${panelGap} bg-[#0b1f33]`}
+          className={`z-10 box-border flex w-full min-w-0 shrink-0 items-stretch ${panelPadding} ${panelGap} bg-[#0b1f33]`}
           data-harbour-chrome="compact-bottom"
         >
-          <div className="min-w-0 flex-[2]" data-sidebar-slot="wind">
-            <WindIndicator />
+          <div className="flex min-h-0 min-w-0 flex-[1] flex-col" data-sidebar-slot="engine">
+            <ControlsPanel chrome="portrait-engine" />
           </div>
-          <div className="min-w-0 flex-[3]" data-sidebar-slot="controls">
-            <ControlsPanel layout="sidebar" />
+          <div className="flex min-h-0 min-w-0 flex-[1] flex-col" data-sidebar-slot="wind">
+            <WindIndicator chrome="portrait-strip" />
+          </div>
+          <div className="flex min-h-0 min-w-0 flex-[2] flex-col" data-sidebar-slot="rudder">
+            <ControlsPanel chrome="portrait-rudder" />
           </div>
         </footer>
       </div>

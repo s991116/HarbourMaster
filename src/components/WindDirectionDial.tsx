@@ -4,6 +4,7 @@ import { snapWindDirectionDegrees } from '../controls/controlSteps'
 type WindDirectionDialProps = {
   degrees: number
   onChange: (degrees: number) => void
+  size?: 'default' | 'compact'
 }
 
 function degreesFromPointer(
@@ -23,7 +24,12 @@ function degreesFromPointer(
   return snapWindDirectionDegrees(normalized)
 }
 
-export function WindDirectionDial({ degrees, onChange }: WindDirectionDialProps) {
+export function WindDirectionDial({
+  degrees,
+  onChange,
+  size = 'default',
+}: WindDirectionDialProps) {
+  const dialSizeClass = size === 'compact' ? 'h-12 w-12' : 'h-16 w-16'
   const dialRef = useRef<HTMLDivElement>(null)
 
   const valueFromPointer = useCallback(
@@ -65,7 +71,7 @@ export function WindDirectionDial({ degrees, onChange }: WindDirectionDialProps)
       aria-valuemax={345}
       aria-valuenow={degrees}
       aria-valuetext={`${degrees} degrees`}
-      className="relative h-16 w-16 shrink-0 touch-none select-none"
+      className={`relative shrink-0 touch-none select-none ${dialSizeClass}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
