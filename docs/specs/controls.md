@@ -14,7 +14,7 @@ The user controls throttle and rudder in **discrete steps** (realistic lever “
 | Paused (`running === false`) | Physics does not run; snapshot frozen |
 | Running | `resume()` / start — `tick` runs |
 | After scenario change | Always paused; throttle/rudder reset; `boatConfig` and wind reset to new scenario defaults |
-| After scenario reset (R) | Position and wind reset; throttle/rudder neutral; Settings values (`boatConfig`, water ripples, collision hull) unchanged |
+| After scenario reset (R) | Position and wind reset; throttle/rudder neutral; Settings values (`boatConfig`, max rudder angle, water ripples, collision hull) unchanged |
 
 **Enter** resumes when paused (`useKeyboardControls`).
 
@@ -39,7 +39,7 @@ Defined in `controlSteps.ts`:
 | Parameter | Max step | Physics value |
 |-----------|----------|---------------|
 | Throttle | ±4 (`MAX_THROTTLE_STEP`) | `step / 4` → [-1, 1] |
-| Rudder | ±5 (`MAX_RUDDER_STEP`) | linear to ±`MAX_RUDDER_ANGLE` (0.52 rad) |
+| Rudder | ±5 (`MAX_RUDDER_STEP`) | linear to ±max angle from Settings (`maxRudderAngleDegrees`, 5°–~29.8°, default full deflection) |
 
 Store holds `throttleStep`, `rudderStep`, and derived `input: PhysicsInput`.
 
@@ -58,7 +58,7 @@ Layout mode from `useHarbourLayoutMode` — see [rendering.md](rendering.md).
 | UI | Type | Content |
 |----|------|---------|
 | **Scenario** | Popup (`HarbourPopupButton`) | Scenario select, reset (R) |
-| **Settings** | Popup | `BoatConfig` fields, collision-hull toggle, water-ripple shader parameters (`waterRippleSettingsStore`) |
+| **Settings** | Popup | Max rudder angle (degrees), `BoatConfig` fields, collision-hull toggle, water-ripple shader parameters (`waterRippleSettingsStore`) |
 | **Wind** | Open panel (same frame as Controls) | Direction dial (15° steps), speed slider |
 | **Controls** | Open panel | Engine and rudder sliders |
 
@@ -73,7 +73,7 @@ Popup dialogs share `HarbourPopupWindow` (backdrop, title bar, Escape to close).
 
 - [ ] Arrow keys only change steps within max; UI shows consistent labels (`formatThrottleStep` / `formatRudderStep`).
 - [ ] Space sets both steps to 0 and neutral `PhysicsInput`.
-- [ ] R resets boat position and wind to scenario defaults; throttle/rudder steps reset to neutral. Settings-panel values (boat config, water ripples, collision hull overlay) are unchanged.
+- [ ] R resets boat position and wind to scenario defaults; throttle/rudder steps reset to neutral. Settings-panel values (boat config, max rudder angle, water ripples, collision hull overlay) are unchanged.
 - [ ] Paused: no position change on arrow keys (resume only with Enter).
 - [ ] Scenario selector stops sim, resets controls, and loads the selected scenario preset.
 

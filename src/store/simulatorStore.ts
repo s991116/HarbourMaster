@@ -1,9 +1,12 @@
 import { create } from 'zustand'
 import type { BoatConfig, PhysicsInput, PhysicsSnapshot, Wind } from '../physics/types'
 import {
+  DEFAULT_MAX_RUDDER_ANGLE_DEG,
   MAX_RUDDER_STEP,
   MAX_THROTTLE_STEP,
+  maxRudderAngleDegreesToRadians,
   rudderStepToAngle,
+  snapMaxRudderAngleDegrees,
   throttleStepToValue,
   windDirectionDegreesToRadians,
   windSpeedKnotsToMs,
@@ -19,6 +22,7 @@ type SimulatorStore = {
   input: PhysicsInput
   boatConfig: BoatConfig
   showCollisionHull: boolean
+  maxRudderAngleDegrees: number
   snapshot: PhysicsSnapshot
   controller: SimulatorController
   setShowCollisionHull: (show: boolean) => void
@@ -33,6 +37,8 @@ type SimulatorStore = {
   setBoatConfig: (config: BoatConfig) => void
   updateBoatConfig: (partial: Partial<BoatConfig>) => void
   resetBoatConfig: () => void
+  setMaxRudderAngleDegrees: (degrees: number) => void
+  resetMaxRudderAngleDegrees: () => void
   setWind: (wind: Wind) => void
   setWindSpeedKnots: (knots: number) => void
   setWindDirectionDegrees: (degrees: number) => void
@@ -40,10 +46,14 @@ type SimulatorStore = {
   tick: (dt: number) => void
 }
 
-function stepsToInput(throttleStep: number, rudderStep: number): PhysicsInput {
+function stepsToInput(
+  throttleStep: number,
+  rudderStep: number,
+  maxRudderAngleRad: number,
+): PhysicsInput {
   return {
     throttle: throttleStepToValue(throttleStep),
-    rudderAngle: rudderStepToAngle(rudderStep),
+    rudderAngle: rudderStepToAngle(rudderStep, maxRudderAngleRad),
   }
 }
 
@@ -55,9 +65,10 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   running: false,
   throttleStep: 0,
   rudderStep: 0,
-  input: stepsToInput(0, 0),
+  input: stepsToInput(0, 0, maxRudderAngleDegreesToRadians(DEFAULT_MAX_RUDDER_ANGLE_DEG)),
   boatConfig: { ...initialScenario.boatConfig },
   showCollisionHull: false,
+  maxRudderAngleDegrees: DEFAULT_MAX_RUDDER_ANGLE_DEG,
   snapshot: controller.getSnapshot(),
   controller,
 
@@ -75,7 +86,11 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
       running: false,
       throttleStep: 0,
       rudderStep: 0,
-      input: stepsToInput(0, 0),
+      input: stepsToInput(
+        0,
+        0,
+        maxRudderAngleDegreesToRadians(get().maxRudderAngleDegrees),
+      ),
       boatConfig: { ...scenario.boatConfig },
       snapshot: controller.getSnapshot(),
     })
@@ -94,14 +109,16 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
 
   setThrottleStep: (step) => {
     const throttleStep = Math.max(-MAX_THROTTLE_STEP, Math.min(MAX_THROTTLE_STEP, step))
-    const { rudderStep } = get()
-    set({ throttleStep, input: stepsToInput(throttleStep, rudderStep) })
+    const { rudderStep, maxRudderAngleDegrees } = get()
+    const maxRudderAngleRad = maxRudderAngleDegreesToRadians(maxRudderAngleDegrees)
+    set({ throttleStep, input: stepsToInput(throttleStep, rudderStep, maxRudderAngleRad) })
   },
 
   setRudderStep: (step) => {
     const rudderStep = Math.max(-MAX_RUDDER_STEP, Math.min(MAX_RUDDER_STEP, step))
-    const { throttleStep } = get()
-    set({ rudderStep, input: stepsToInput(throttleStep, rudderStep) })
+    const { throttleStep, maxRudderAngleDegrees } = get()
+    const maxRudderAngleRad = maxRudderAngleDegreesToRadians(maxRudderAngleDegrees)
+    set({ rudderStep, input: stepsToInput(throttleStep, rudderStep, maxRudderAngleRad) })
   },
 
   adjustThrottleStep: (delta) => {
@@ -113,10 +130,11 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   },
 
   neutralControls: () => {
+    const maxRudderAngleRad = maxRudderAngleDegreesToRadians(get().maxRudderAngleDegrees)
     set({
       throttleStep: 0,
       rudderStep: 0,
-      input: stepsToInput(0, 0),
+      input: stepsToInput(0, 0, maxRudderAngleRad),
     })
   },
 
@@ -134,6 +152,21 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
   resetBoatConfig: () => {
     const scenario = getScenario(get().scenarioId)
     get().setBoatConfig({ ...scenario.boatConfig })
+  },
+
+  setMaxRudderAngleDegrees: (degrees) => {
+    const maxRudderAngleDegrees = snapMaxRudderAngleDegrees(degrees)
+    const maxRudderAngleRad = maxRudderAngleDegreesToRadians(maxRudderAngleDegrees)
+    get().controller.setMaxRudderAngle(maxRudderAngleRad)
+    const { throttleStep, rudderStep } = get()
+    set({
+      maxRudderAngleDegrees,
+      input: stepsToInput(throttleStep, rudderStep, maxRudderAngleRad),
+    })
+  },
+
+  resetMaxRudderAngleDegrees: () => {
+    get().setMaxRudderAngleDegrees(DEFAULT_MAX_RUDDER_ANGLE_DEG)
   },
 
   setWind: (wind) => {
@@ -158,10 +191,11 @@ export const useSimulatorStore = create<SimulatorStore>((set, get) => ({
     controller.resetScenario(scenarioId)
     controller.setBoatConfig(boatConfig)
     controller.stop()
+    const maxRudderAngleRad = maxRudderAngleDegreesToRadians(get().maxRudderAngleDegrees)
     set({
       throttleStep: 0,
       rudderStep: 0,
-      input: stepsToInput(0, 0),
+      input: stepsToInput(0, 0, maxRudderAngleRad),
       snapshot: controller.getSnapshot(),
       running: false,
     })

@@ -1,8 +1,20 @@
 import { useMemo } from 'react'
 import type { StaticObstacle } from '../physics/types'
-import { getScenario } from '../simulator/scenarios'
+import { getScenario, type LandPatch } from '../simulator/scenarios'
 import { useSimulatorStore } from '../store/simulatorStore'
 import { WaterSurface } from './WaterSurface'
+
+function LandPatchMesh({ patch }: { patch: LandPatch }) {
+  return (
+    <mesh
+      position={[patch.position.x, 0.05, patch.position.y]}
+      rotation={[-Math.PI / 2, 0, 0]}
+    >
+      <planeGeometry args={[patch.width, patch.height]} />
+      <meshStandardMaterial color="#9dd49d" />
+    </mesh>
+  )
+}
 
 function ObstacleMesh({ obstacle }: { obstacle: StaticObstacle }) {
   const color =
@@ -38,7 +50,7 @@ function ObstacleMesh({ obstacle }: { obstacle: StaticObstacle }) {
 export function HarbourEnvironment() {
   const scenarioId = useSimulatorStore((s) => s.scenarioId)
   const scenario = useMemo(() => getScenario(scenarioId), [scenarioId])
-  const { bounds, obstacles } = scenario
+  const { bounds, obstacles, landPatches } = scenario
 
   const width = bounds.maxX - bounds.minX
   const depth = bounds.maxY - bounds.minY
@@ -48,6 +60,10 @@ export function HarbourEnvironment() {
   return (
     <group>
       <WaterSurface width={width} depth={depth} centerX={centerX} centerZ={centerZ} />
+
+      {landPatches.map((patch) => (
+        <LandPatchMesh key={patch.id} patch={patch} />
+      ))}
 
       <lineLoop position={[centerX, 0.02, centerZ]}>
         <bufferGeometry>

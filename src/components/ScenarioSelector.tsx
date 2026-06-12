@@ -46,6 +46,13 @@ function ScenarioWindowContent({ cleatDebug = false }: { cleatDebug?: boolean })
         </select>
       </label>
 
+      <a
+        href="#editor"
+        className={`${harbourActionButtonClass} inline-flex w-full items-center justify-center text-center`}
+      >
+        Map editor
+      </a>
+
       <button type="button" onClick={resetScenario} className={harbourActionButtonClass}>
         Reset (R)
       </button>

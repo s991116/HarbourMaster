@@ -15,8 +15,9 @@ Specification-driven development: **specs** = what, **skills** = how, **rules** 
 | Viewport, 2D/3D display | [docs/specs/rendering.md](docs/specs/rendering.md) | — |
 | Boat and pier cleats, debug | [docs/specs/mooring-cleats.md](docs/specs/mooring-cleats.md) | [.cursor/skills/add-debug-overlay/SKILL.md](.cursor/skills/add-debug-overlay/SKILL.md) |
 | Deploy / hosting | [docs/specs/deployment.md](docs/specs/deployment.md) | [.cursor/skills/deploy/SKILL.md](.cursor/skills/deploy/SKILL.md) |
+| Scenarios / tile map editor | [docs/specs/scenarios.md](docs/specs/scenarios.md) | — |
 
-**Scenarios:** No dedicated spec yet. Data lives in `src/simulator/scenarios.ts`. A future scenario builder may replace hard-coded scenarios.
+**Scenarios / map editor:** [docs/specs/scenarios.md](docs/specs/scenarios.md) — tile maps in `src/simulator/tileMap/`, editor at `#editor`. Legacy scenarios in `src/simulator/scenarios.ts`.
 
 ## Folder layout
 

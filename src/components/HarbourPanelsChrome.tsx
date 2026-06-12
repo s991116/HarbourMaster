@@ -90,30 +90,17 @@ export function HarbourPanelsChrome({
     </>
   )
 
-  if (mode === 'landscape-sidebar') {
-    return (
-      <aside
-        className={`box-border z-10 flex h-full min-h-0 shrink-0 flex-col overflow-hidden ${panelPadding} ${panelText} ${harbourPanelWidthClass}`}
-      >
-        <div
-          data-sidebar-top
-          className={`flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none] ${panelGap}`}
-        >
-          {sidebarMenu}
-        </div>
-        <div className={`w-full shrink-0 pt-[clamp(0.25rem,0.7vw,0.5rem)]`}>{controlsPanel}</div>
-      </aside>
-    )
-  }
-
   return (
-    <header
-      className={`z-10 flex shrink-0 flex-row items-start overflow-x-auto bg-[#0b1f33] ${panelPadding} ${panelText} ${panelGap}`}
+    <aside
+      className={`box-border z-10 flex h-full min-h-0 shrink-0 flex-col overflow-hidden ${panelPadding} ${panelText} ${harbourPanelWidthClass}`}
     >
-      <div data-sidebar-top className={`flex min-w-0 flex-1 flex-col ${panelGap}`}>
+      <div
+        data-sidebar-top
+        className={`flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none] ${panelGap}`}
+      >
         {sidebarMenu}
       </div>
-      {controlsPanel}
-    </header>
+      <div className={`w-full shrink-0 pt-[clamp(0.25rem,0.7vw,0.5rem)]`}>{controlsPanel}</div>
+    </aside>
   )
 }

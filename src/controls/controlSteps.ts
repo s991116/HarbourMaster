@@ -2,16 +2,33 @@ import { clamp } from '../physics/vector2'
 
 export const MAX_THROTTLE_STEP = 4
 export const MAX_RUDDER_STEP = 5
-export const MAX_RUDDER_ANGLE = 0.52
+
+/** Default full rudder deflection (radians) — ~29.8° at ±5 steps. */
+export const DEFAULT_MAX_RUDDER_ANGLE_RAD = 0.52
+export const DEFAULT_MAX_RUDDER_ANGLE_DEG =
+  (DEFAULT_MAX_RUDDER_ANGLE_RAD * 180) / Math.PI
+
+export const MIN_MAX_RUDDER_ANGLE_DEG = 5
+/** Upper limit matches the original full rudder deflection (~29.8°). */
+export const MAX_MAX_RUDDER_ANGLE_DEG = DEFAULT_MAX_RUDDER_ANGLE_DEG
+
+export function maxRudderAngleDegreesToRadians(degrees: number): number {
+  return (degrees * Math.PI) / 180
+}
+
+export function snapMaxRudderAngleDegrees(degrees: number): number {
+  const clamped = clamp(degrees, MIN_MAX_RUDDER_ANGLE_DEG, MAX_MAX_RUDDER_ANGLE_DEG)
+  return Math.round(clamped * 10) / 10
+}
 
 export function throttleStepToValue(step: number): number {
   const clamped = clamp(step, -MAX_THROTTLE_STEP, MAX_THROTTLE_STEP)
   return clamped / MAX_THROTTLE_STEP
 }
 
-export function rudderStepToAngle(step: number): number {
+export function rudderStepToAngle(step: number, maxAngleRad: number): number {
   const clamped = clamp(step, -MAX_RUDDER_STEP, MAX_RUDDER_STEP)
-  return (clamped / MAX_RUDDER_STEP) * MAX_RUDDER_ANGLE
+  return (clamped / MAX_RUDDER_STEP) * maxAngleRad
 }
 
 export function formatThrottleStep(step: number): string {

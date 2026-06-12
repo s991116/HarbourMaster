@@ -25,12 +25,23 @@ PhysicsInput (throttle, rudderAngle)
 | Contribution | Module | Note |
 |--------------|--------|------|
 | Propeller + prop walk | `propellerModel.ts` | Reverse time tracked for prop walk |
-| Rudder | `rudderModel.ts` | Angle clamped via `clampRudderAngle` |
+| Rudder | `rudderModel.ts` | Lateral force at stern; yaw from lever arm (`hullForces.ts`) |
 | Wind | `windModel.ts` | From scenario/controller `Wind` |
-| Water resistance | `waterResistanceModel.ts` | Direction-dependent drag + angular damping |
+| Water resistance | `waterResistanceModel.ts` | Direction-dependent drag + angular damping; `keelType` via `keelModel.ts` |
 | Collision | `collisionModel.ts` | Convex hull vs AABB quay/obstacles + bounds |
 
 Total force and torque are integrated explicitly (Euler). Mass = `BoatConfig.displacement`, rotation = `turningInertia`.
+
+## Rudder model
+
+- Lateral lift at the **stern** (offset `0.45 × length` aft of CoM).
+- Yaw torque = **r × F** only — no separate torque multiplier.
+- Lift coefficient recalibrated (~4200 N·m⁻²) for similar turn rate at lower sideslip vs the legacy CoM force + `0.22 × length` hack.
+- Authority scales with surge speed (full at ~2.5 m/s STW); astern uses `REVERSE_RUDDER_AUTHORITY` (0.65).
+
+## Keel type
+
+`keelType` (`long-keel` | `fin-keel`) scales **sideways drag** and **swing damping** via `keelModel.ts` on top of `BoatConfig.dragSideways` and angular drag. Long keels resist sideslip and skid more than fin keels.
 
 ## Input limits
 
@@ -59,7 +70,7 @@ Changes to hull shape or penetration must preserve “no tunneling through quay�
 - Presets: `boatPresets.ts` (`FIN_KEEL_BOAT`, `LONG_KEEL_BOAT`).
 - Scenario selects preset on **scenario change**; `simulatorStore` can update `boatConfig` at runtime via the Settings popup (must stay consistent with hull profile).
 - **Scenario reset (R)** restores position and scenario wind but keeps the current `boatConfig` and other Settings values.
-- Default directional drag (both presets): `dragAhead` 175, `dragAstern` 400, `dragSideways` 1000 — see `waterResistanceModel.ts`.
+- Default directional drag (both presets): `dragAhead` 175, `dragAstern` 400, `dragSideways` 1000 — see `waterResistanceModel.ts`. Effective sideways drag is `dragSideways × keel multiplier` (`long-keel` 1.45×, `fin-keel` 1×).
 
 ## Acceptance criteria
 
@@ -69,6 +80,8 @@ Changes to hull shape or penetration must preserve “no tunneling through quay�
 - [ ] Quay collision reduces penetration without abnormal “hopping” at low speed.
 - [ ] Prop walk is noticeable astern, especially after brief time in reverse (`reverseTime`).
 - [ ] Boat comes to rest over time with neutral throttle and rudder (drag + neutral angular zeroing).
+- [ ] Long-keel preset resists sideslip more than fin-keel at the same `dragSideways` setting.
+- [ ] Max rudder ahead produces noticeable turn without excessive crab/sideslip vs pre-stern-offset behaviour.
 
 ## Out of scope (for now)
 

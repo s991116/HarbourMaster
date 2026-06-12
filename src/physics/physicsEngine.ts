@@ -13,6 +13,7 @@ import {
   resolveCollisions,
 } from './collisionModel'
 import { computePropellerForces } from './propellerModel'
+import { DEFAULT_MAX_RUDDER_ANGLE_RAD } from '../controls/controlSteps'
 import { clampRudderAngle, computeRudderForces } from './rudderModel'
 import { add, clamp, dot, fromAngle, scale, vec2 } from './vector2'
 import { computeWaterDrag, computeAngularDamping } from './waterResistanceModel'
@@ -26,6 +27,7 @@ export class PhysicsEngine {
   private bounds: HarbourBounds
   private reverseTime = 0
   private lastReverse = false
+  private maxRudderAngle = DEFAULT_MAX_RUDDER_ANGLE_RAD
 
   constructor(
     config: BoatConfig,
@@ -55,6 +57,10 @@ export class PhysicsEngine {
 
   setBounds(bounds: HarbourBounds): void {
     this.bounds = bounds
+  }
+
+  setMaxRudderAngle(maxAngleRad: number): void {
+    this.maxRudderAngle = Math.max(0.01, maxAngleRad)
   }
 
   reset(state: BoatState, wind: Wind): void {
@@ -90,7 +96,7 @@ export class PhysicsEngine {
 
   step(input: PhysicsInput, dt: number): PhysicsSnapshot {
     this.state.throttle = clamp(input.throttle, -1, 1)
-    this.state.rudderAngle = clampRudderAngle(input.rudderAngle)
+    this.state.rudderAngle = clampRudderAngle(input.rudderAngle, this.maxRudderAngle)
 
     const isReverse = this.state.throttle < -0.02
     if (isReverse && !this.lastReverse) {
@@ -106,17 +112,14 @@ export class PhysicsEngine {
     const rudder = computeRudderForces(this.config, this.state)
     const wind = computeWindForces(this.config, this.state, this.wind)
     const drag = computeWaterDrag(this.config, this.state)
+    const angularDamping = computeAngularDamping(this.config, this.state)
 
     const totalForce = add(
       add(add(vec2(prop.force.x, prop.force.y), vec2(rudder.force.x, rudder.force.y)), vec2(wind.force.x, wind.force.y)),
       vec2(drag.x, drag.y),
     )
 
-    const totalTorque =
-      prop.torque +
-      rudder.torque +
-      wind.torque +
-      computeAngularDamping(this.config, this.state)
+    const totalTorque = prop.torque + rudder.torque + wind.torque + angularDamping
 
     const mass = this.config.displacement
     const acceleration = scale(totalForce, 1 / mass)

@@ -1,3 +1,4 @@
+import { getKeelHydrodynamics } from './keelModel'
 import type { BoatConfig, BoatState } from './types'
 import { dot, fromAngle, scale } from './vector2'
 
@@ -23,9 +24,12 @@ export function computeWaterDrag(
   const surge = dot(state.velocity, forward)
   const sway = dot(state.velocity, sideways)
 
+  const keel = getKeelHydrodynamics(config.keelType)
+  const swayCoeff = config.dragSideways * keel.swayDragMultiplier
+
   const surgeCoeff = surge >= 0 ? config.dragAhead : config.dragAstern
   const surgeDrag = axisDrag(surge, surgeCoeff)
-  const swayDrag = axisDrag(sway, config.dragSideways)
+  const swayDrag = axisDrag(sway, swayCoeff)
 
   const dragAlongSurge = scale(forward, surgeDrag)
   const dragAlongSway = scale(sideways, swayDrag)
@@ -46,8 +50,11 @@ export function computeAngularDamping(
 ): number {
   const { angularVelocity } = state
 
+  const keel = getKeelHydrodynamics(config.keelType)
+  const effectiveSwayDrag = config.dragSideways * keel.swayDragMultiplier
+
   const hullCoupling =
-    config.dragSideways * config.length * config.beam * 0.000008
+    effectiveSwayDrag * config.length * config.beam * 0.000008 * keel.swingDampingMultiplier
 
   const linear =
     -angularVelocity *
@@ -56,7 +63,8 @@ export function computeAngularDamping(
   const quadratic =
     -angularVelocity *
     Math.abs(angularVelocity) *
-    (config.angularDragQuadratic + hullCoupling * 0.5)
+    (config.angularDragQuadratic + hullCoupling * 0.5) *
+    keel.swingDampingMultiplier
 
   return linear + quadratic
 }

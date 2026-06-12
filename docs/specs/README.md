@@ -23,8 +23,9 @@ These files are the **contract** for HarbourMaster: behaviour, invariants, and a
 | [rendering.md](rendering.md) | Basin viewport, world→screen, camera |
 | [mooring-cleats.md](mooring-cleats.md) | Boat and pier cleats, overlays, debug |
 | [deployment.md](deployment.md) | Build, Cloudflare Pages, DNS |
+| [scenarios.md](scenarios.md) | Tile maps, bake pipeline, map editor |
 
-**Not covered here (yet):** scenarios / scenario builder.
+**Scenarios:** Tile-backed maps and editor — see [scenarios.md](scenarios.md). Legacy hand-authored entries remain in `scenarios.ts`.
 
 ## Maintenance
 

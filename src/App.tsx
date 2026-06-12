@@ -48,18 +48,9 @@ function App() {
     )
   }
 
-  if (layoutMode === 'landscape-sidebar') {
-    return (
-      <div className="flex h-dvh max-h-dvh w-full flex-row overflow-hidden">
-        <HarbourPanelsChrome cleatDebug={cleatDebug} mode="landscape-sidebar" />
-        {basin}
-      </div>
-    )
-  }
-
   return (
-    <div className="flex h-dvh max-h-dvh w-full flex-col overflow-hidden">
-      <HarbourPanelsChrome cleatDebug={cleatDebug} mode="portrait" />
+    <div className="flex h-dvh max-h-dvh w-full flex-row overflow-hidden">
+      <HarbourPanelsChrome cleatDebug={cleatDebug} mode="landscape-sidebar" />
       {basin}
     </div>
   )

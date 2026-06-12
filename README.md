@@ -20,6 +20,8 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173).
 
+**Map editor:** [http://localhost:5173/#editor](http://localhost:5173/#editor) — paint tile-based harbour layouts (see [docs/specs/scenarios.md](docs/specs/scenarios.md)).
+
 ## Controls
 
 | Key | Action |

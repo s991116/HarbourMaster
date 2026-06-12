@@ -72,4 +72,8 @@ export class SimulatorController {
   setWind(wind: Wind): void {
     this.engine.setWind(wind)
   }
+
+  setMaxRudderAngle(maxAngleRad: number): void {
+    this.engine.setMaxRudderAngle(maxAngleRad)
+  }
 }

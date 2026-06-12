@@ -68,9 +68,12 @@ function sectionTitle(text: string) {
 export function SettingsWindowContent() {
   const boatConfig = useSimulatorStore((s) => s.boatConfig)
   const showCollisionHull = useSimulatorStore((s) => s.showCollisionHull)
+  const maxRudderAngleDegrees = useSimulatorStore((s) => s.maxRudderAngleDegrees)
   const updateBoatConfig = useSimulatorStore((s) => s.updateBoatConfig)
   const resetBoatConfig = useSimulatorStore((s) => s.resetBoatConfig)
   const setShowCollisionHull = useSimulatorStore((s) => s.setShowCollisionHull)
+  const setMaxRudderAngleDegrees = useSimulatorStore((s) => s.setMaxRudderAngleDegrees)
+  const resetMaxRudderAngleDegrees = useSimulatorStore((s) => s.resetMaxRudderAngleDegrees)
 
   const waterSettings = useWaterRippleSettingsStore((s) => s.settings)
   const updateWaterSettings = useWaterRippleSettingsStore((s) => s.updateSettings)
@@ -101,6 +104,26 @@ export function SettingsWindowContent() {
             if (normalized === 'false') setShowCollisionHull(false)
           }}
         />
+      </section>
+
+      <section className="space-y-2">
+        {sectionTitle('Controls')}
+        <ParameterTextField
+          label="Rudder movement max (degrees)"
+          value={String(maxRudderAngleDegrees)}
+          onCommit={(raw) => {
+            const value = parseNumber(raw)
+            if (value === null) return
+            setMaxRudderAngleDegrees(value)
+          }}
+        />
+        <button
+          type="button"
+          onClick={resetMaxRudderAngleDegrees}
+          className={harbourActionButtonClass}
+        >
+          Reset rudder movement to default
+        </button>
       </section>
 
       <section className="space-y-2">

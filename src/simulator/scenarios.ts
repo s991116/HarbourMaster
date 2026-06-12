@@ -7,6 +7,7 @@ import type {
 } from '../physics/types'
 import { vec2 } from '../physics/vector2'
 import { FIN_KEEL_BOAT, LONG_KEEL_BOAT } from '../physics/boatPresets'
+import { getBakedTileScenario } from './tileMap/registry'
 
 export type ScenarioId =
   | 'empty-basin'
@@ -18,6 +19,14 @@ export type ScenarioId =
 export type PierMooringCleat = {
   id: string
   position: { x: number; y: number }
+}
+
+/** Visual-only land from baked tile maps (no collision). */
+export type LandPatch = {
+  id: string
+  position: { x: number; y: number }
+  width: number
+  height: number
 }
 
 export type Scenario = {
@@ -32,6 +41,8 @@ export type Scenario = {
   bounds: HarbourBounds
   /** Quay cleats for mooring-line UX (optional per scenario). */
   pierCleats: PierMooringCleat[]
+  /** Decorative land tiles from tile-map bake (visual only). */
+  landPatches: LandPatch[]
 }
 
 const DEFAULT_BOUNDS: HarbourBounds = {
@@ -141,31 +152,7 @@ function createBasinFrame(
   ]
 }
 
-export const SCENARIOS: Scenario[] = [
-  {
-    id: 'empty-basin',
-    name: 'Empty basin',
-    description: 'Open basin enclosed by a uniform perimeter edge.',
-    objective: 'Learn speed, inertia, and prop walk in astern gear.',
-    boatConfig: FIN_KEEL_BOAT,
-    initialState: {
-      position: vec2(0, -30),
-      heading: 0,
-      velocity: vec2(),
-      angularVelocity: 0,
-      throttle: 0,
-      rudderAngle: 0,
-    },
-    wind: { speed: 0, direction: Math.PI * 0.75 },
-    obstacles: createBasinFrame(
-      DEFAULT_BOUNDS,
-      EMPTY_BASIN_EDGE_THICKNESS,
-      EMPTY_BASIN_SIDE_INSET,
-      EMPTY_BASIN_VERTICAL_INSET,
-    ),
-    bounds: DEFAULT_BOUNDS,
-    pierCleats: [],
-  },
+const LEGACY_SCENARIOS: Scenario[] = [
   {
     id: 'berthing',
     name: 'Berthing alongside',
@@ -192,6 +179,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     bounds: DEFAULT_BOUNDS,
     pierCleats: [],
+    landPatches: [],
   },
   {
     id: 'departure-crosswind',
@@ -229,6 +217,7 @@ export const SCENARIOS: Scenario[] = [
       { id: 'pier-6', position: vec2(36, 6.85) },
       { id: 'pier-7', position: vec2(44, 6.85) },
     ],
+    landPatches: [],
   },
   {
     id: 'narrow-berth',
@@ -259,13 +248,27 @@ export const SCENARIOS: Scenario[] = [
     ],
     bounds: DEFAULT_BOUNDS,
     pierCleats: [],
+    landPatches: [],
   },
 ]
 
 export function getScenario(id: ScenarioId): Scenario {
-  const scenario = SCENARIOS.find((s) => s.id === id)
+  const tileScenario = getBakedTileScenario(id)
+  if (tileScenario) return tileScenario
+
+  const scenario = LEGACY_SCENARIOS.find((s) => s.id === id)
   if (!scenario) {
     throw new Error(`Unknown scenario: ${id}`)
   }
   return scenario
 }
+
+/** All playable scenarios including tile-backed entries. */
+export function getAllScenarios(): Scenario[] {
+  const tileEmpty = getBakedTileScenario('empty-basin')
+  if (!tileEmpty) return LEGACY_SCENARIOS
+  return [tileEmpty, ...LEGACY_SCENARIOS]
+}
+
+/** Dropdown / catalog of all playable scenarios. */
+export const SCENARIOS = getAllScenarios()
